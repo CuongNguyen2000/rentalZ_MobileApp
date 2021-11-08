@@ -1,10 +1,10 @@
-class Funiture {
+class Furniture {
   int? id;
   String? name;
   String? description;
 
   // ignore: non_constant_identifier_names
-  FunitureMap() {
+  FurnitureMap() {
     var mapping = <String, dynamic>{};
     mapping['id'] = id;
     mapping['name'] = name;

@@ -1,52 +1,52 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rental_z/helpers/drawer_navigation.dart';
-import 'package:rental_z/models/funiture.dart';
-import 'package:rental_z/services/funiture_service.dart';
+import 'package:rental_z/models/furniture.dart';
+import 'package:rental_z/services/furniture_service.dart';
 
-class FunitureScreen extends StatefulWidget {
-  const FunitureScreen({Key? key}) : super(key: key);
+class FurnitureScreen extends StatefulWidget {
+  const FurnitureScreen({Key? key}) : super(key: key);
 
   @override
-  _FunitureScreenState createState() => _FunitureScreenState();
+  _FurnitureScreenState createState() => _FurnitureScreenState();
 }
 
-class _FunitureScreenState extends State<FunitureScreen> {
+class _FurnitureScreenState extends State<FurnitureScreen> {
   // ignore: unused_field
-  final _funitureNameController = TextEditingController();
-  final _funitureDescriptionController = TextEditingController();
+  final _furnitureNameController = TextEditingController();
+  final _furnitureDescriptionController = TextEditingController();
 
-  final _funiture = Funiture();
-  final _funitureService = FunitureService();
+  final _furniture = Furniture();
+  final _furnitureService = FurnitureService();
 
   // ignore: non_constant_identifier_names
-  List<Funiture> _FunitureList = <Funiture>[];
+  List<Furniture> _FurnitureList = <Furniture>[];
 
-  final _editFunitureNameController = TextEditingController();
-  final _editFunitureDescriptionController = TextEditingController();
+  final _editFurnitureNameController = TextEditingController();
+  final _editFurnitureDescriptionController = TextEditingController();
 
   bool _isLoading = false;
 
-  getAllFunitures() async {
-    _FunitureList = [];
-    var funitures = await _funitureService.getAllFunitures();
-    funitures.forEach((bedroom) {
+  getAllFurnitures() async {
+    _FurnitureList = [];
+    var furnitures = await _furnitureService.getAllFurnitures();
+    furnitures.forEach((bedroom) {
       setState(() {
-        var funitureModel = Funiture();
-        funitureModel.id = bedroom['id'];
-        funitureModel.name = bedroom['name'];
-        funitureModel.description = bedroom['description'];
-        _FunitureList.add(funitureModel);
+        var furnitureModel = Furniture();
+        furnitureModel.id = bedroom['id'];
+        furnitureModel.name = bedroom['name'];
+        furnitureModel.description = bedroom['description'];
+        _FurnitureList.add(furnitureModel);
         _isLoading = false;
       });
     });
     // ignore: avoid_print
-    print(funitures);
+    print(furnitures);
   }
 
   void initState() {
     super.initState();
-    getAllFunitures();
+    getAllFurnitures();
   }
 
   void _showForm(int? id) async {
@@ -60,14 +60,14 @@ class _FunitureScreenState extends State<FunitureScreen> {
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 TextField(
-                  controller: _funitureNameController,
+                  controller: _furnitureNameController,
                   decoration: InputDecoration(
                     labelText: 'Funiture Name',
                   ),
                   autofocus: true,
                 ),
                 TextField(
-                  controller: _funitureDescriptionController,
+                  controller: _furnitureDescriptionController,
                   decoration: InputDecoration(
                     labelText: 'Funiture Description',
                   ),
@@ -85,13 +85,13 @@ class _FunitureScreenState extends State<FunitureScreen> {
               TextButton(
                 child: const Text('Submit'),
                 onPressed: () async {
-                  if (_funitureNameController.text.isEmpty) {
+                  if (_furnitureNameController.text.isEmpty) {
                     await showDialog<String>(
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
                           title: const Text('Error'),
-                          content: Text('Funiture Name is required'),
+                          content: Text('Furniture Name is required'),
                           actions: <Widget>[
                             TextButton(
                               child: const Text('OK'),
@@ -103,13 +103,13 @@ class _FunitureScreenState extends State<FunitureScreen> {
                         );
                       },
                     );
-                  } else if (_funitureDescriptionController.text.isEmpty) {
+                  } else if (_furnitureDescriptionController.text.isEmpty) {
                     await showDialog<String>(
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
                           title: const Text('Error'),
-                          content: Text('Funiture Description is required'),
+                          content: Text('Furniture Description is required'),
                           actions: <Widget>[
                             TextButton(
                               child: const Text('OK'),
@@ -125,11 +125,11 @@ class _FunitureScreenState extends State<FunitureScreen> {
                     setState(() {
                       _isLoading = true;
                     });
-                    _funiture.name = _funitureNameController.text;
-                    _funiture.description = _funitureDescriptionController.text;
-                    await _funitureService.insertFuniture(_funiture);
+                    _furniture.name = _furnitureNameController.text;
+                    _furniture.description = _furnitureDescriptionController.text;
+                    await _furnitureService.insertFurniture(_furniture);
                     Navigator.pop(context);
-                    getAllFunitures();
+                    getAllFurnitures();
                   }
                 },
               ),
@@ -147,17 +147,17 @@ class _FunitureScreenState extends State<FunitureScreen> {
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 TextField(
-                  controller: _editFunitureNameController,
+                  controller: _editFurnitureNameController,
                   decoration: InputDecoration(
-                    labelText: _FunitureList.firstWhere(
-                        (funiture) => funiture.id == id).name,
+                    labelText: _FurnitureList.firstWhere(
+                        (furniture) => furniture.id == id).name,
                   ),
                 ),
                 TextField(
-                  controller: _editFunitureDescriptionController,
+                  controller: _editFurnitureDescriptionController,
                   decoration: InputDecoration(
-                    labelText: _FunitureList.firstWhere(
-                        (funiture) => funiture.id == id).description,
+                    labelText: _FurnitureList.firstWhere(
+                        (furniture) => furniture.id == id).description,
                   ),
                 ),
               ],
@@ -174,13 +174,13 @@ class _FunitureScreenState extends State<FunitureScreen> {
                 onPressed: () {
                   //update bedroom by id
                   setState(() {
-                    _funiture.id = id;
-                    _funiture.name = _editFunitureNameController.text;
-                    _funiture.description =
-                        _editFunitureDescriptionController.text;
+                    _furniture.id = id;
+                    _furniture.name = _editFurnitureNameController.text;
+                    _furniture.description =
+                        _editFurnitureDescriptionController.text;
 
-                    _funitureService.updateFuniture(_funiture);
-                    getAllFunitures();
+                    _furnitureService.updateFurniture(_furniture);
+                    getAllFurnitures();
                     Navigator.pop(context);
                   });
                 },
@@ -192,22 +192,22 @@ class _FunitureScreenState extends State<FunitureScreen> {
     }
   }
 
-  // Show funiture details by id
+  // Show furniture details by id
   void _showDetails(int? id) {
     if (id == null) {
       return;
     }
-    var funiture = _FunitureList.firstWhere((funiture) => funiture.id == id);
+    var furniture = _FurnitureList.firstWhere((furniture) => furniture.id == id);
     showDialog<String>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Funiture Details'),
+          title: Text('Furniture Details'),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text('Name: ${funiture.name}'),
-                Text('Description: ${funiture.description}'),
+                Text('Name: ${furniture.name}'),
+                Text('Description: ${furniture.description}'),
               ],
             ),
           ),
@@ -233,8 +233,8 @@ class _FunitureScreenState extends State<FunitureScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Delete Funiture'),
-          content: Text('Are you sure you want to delete this funiture?'),
+          title: const Text('Delete Furniture'),
+          content: Text('Are you sure you want to delete this furniture?'),
           actions: <Widget>[
             TextButton(
               child: const Text('Cancel'),
@@ -246,8 +246,8 @@ class _FunitureScreenState extends State<FunitureScreen> {
               child: const Text('Delete'),
               onPressed: () {
                 setState(() {
-                  _funitureService.deleteFuniture(id);
-                  getAllFunitures();
+                  _furnitureService.deleteFurniture(id);
+                  getAllFurnitures();
                   Navigator.pop(context);
                 });
               },
@@ -267,7 +267,7 @@ class _FunitureScreenState extends State<FunitureScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Text(
-              'Funiture',
+              'Furniture',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -279,7 +279,7 @@ class _FunitureScreenState extends State<FunitureScreen> {
               child: TextField(
                 onChanged: (text) {},
                 decoration: InputDecoration(
-                  hintText: 'Search funiture',
+                  hintText: 'Search furniture',
                   border: InputBorder.none,
                   prefixIcon: Icon(Icons.search),
                 ),
@@ -293,27 +293,27 @@ class _FunitureScreenState extends State<FunitureScreen> {
           ? Center(
               child: CircularProgressIndicator(),
             )
-          : _FunitureList.length == 0
+          : _FurnitureList.length == 0
               ? Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Text(
-                        'No Funiture Found',
+                        'No Furniture Found',
                         style: Theme.of(context).textTheme.headline4,
                       ),
                     ],
                   ),
                 )
               : ListView.builder(
-                  itemCount: _FunitureList.length,
+                  itemCount: _FurnitureList.length,
                   itemBuilder: (BuildContext context, int index) {
                     return Card(
                       color: Colors.orange[200],
                       margin: const EdgeInsets.all(15),
                       child: ListTile(
-                        title: Text(_FunitureList[index].name!),
-                        subtitle: Text(_FunitureList[index].description!),
+                        title: Text(_FurnitureList[index].name!),
+                        subtitle: Text(_FurnitureList[index].description!),
                         trailing: SizedBox(
                           width: 100,
                           child: Row(
@@ -321,20 +321,20 @@ class _FunitureScreenState extends State<FunitureScreen> {
                               IconButton(
                                 icon: const Icon(Icons.edit),
                                 onPressed: () {
-                                  _showForm(_FunitureList[index].id);
+                                  _showForm(_FurnitureList[index].id);
                                 },
                               ),
                               IconButton(
                                 icon: const Icon(Icons.delete),
                                 onPressed: () {
-                                  _showDeleteMessage(_FunitureList[index].id);
+                                  _showDeleteMessage(_FurnitureList[index].id);
                                 },
                               ),
                             ],
                           ),
                         ),
                         onTap: () {
-                          _showDetails(_FunitureList[index].id);
+                          _showDetails(_FurnitureList[index].id);
                         },
                       ),
                     );

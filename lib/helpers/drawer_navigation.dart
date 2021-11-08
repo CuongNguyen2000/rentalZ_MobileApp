@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:rental_z/screens/bedroom.dart';
-import 'package:rental_z/screens/funiture_type.dart';
+import 'package:rental_z/screens/furniture_type.dart';
 import 'package:rental_z/screens/home.dart';
 import 'package:rental_z/screens/room_type.dart';
 import 'package:flutter/cupertino.dart';
@@ -51,7 +51,7 @@ class _DrawerNavigationState extends State<DrawerNavigation> {
               leading: Icon(Icons.view_list),
               title: Text('Funiture Types'),
               onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => FunitureScreen())),
+                  MaterialPageRoute(builder: (context) => FurnitureScreen())),
             ),
             ListTile(
               leading: Icon(Icons.room_service),

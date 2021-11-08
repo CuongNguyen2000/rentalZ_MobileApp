@@ -23,6 +23,6 @@ class DatabaseConnection {
         'CREATE TABLE rooms(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, name TEXT, description TEXT)');
         
     await db.execute(
-        'CREATE TABLE funitures(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, name TEXT, description TEXT)');
+        'CREATE TABLE furnitures(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, name TEXT, description TEXT)');
   }
 }
