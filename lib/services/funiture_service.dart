@@ -18,7 +18,7 @@ class FunitureService {
   }
 
   // Add funiture
-  addFuniture(Funiture funiture) async {
+  insertFuniture(Funiture funiture) async {
     return await _repository!.insertData('funitures', funiture.FunitureMap());
   }
 
@@ -31,5 +31,10 @@ class FunitureService {
   // Delete funiture
   deleteFuniture(id) async {
     return await _repository!.deleteData('funitures', id);
+  }
+
+  // search funitures by name
+  searchFunitures(String name) async {
+    return await _repository!.searchData('funitures', name);
   }
 }

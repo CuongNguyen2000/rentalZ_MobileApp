@@ -17,6 +17,11 @@ class RoomService {
     return await _repository!.getDataById('rooms', id);
   }
 
+  // Insert room
+  insertRoom(Room room) async {
+    return await _repository!.insertData('rooms', room.RoomMap());
+  }
+
   // Update rooms by id
   updateRoom(Room room) async {
     return await _repository!.updateData('rooms', room.id, room.RoomMap());
@@ -25,5 +30,10 @@ class RoomService {
   // Delete room by id
   deleteRoom(id) async {
     return await _repository!.deleteData('rooms', id);
+  }
+
+  // search room by name
+  searchRoom(String name) async {
+    return await _repository!.searchData('rooms', name);
   }
 }

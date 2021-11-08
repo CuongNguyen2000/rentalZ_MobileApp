@@ -32,4 +32,9 @@ class BedroomService {
   deleteBedroom(id) async {
     return await _repository!.deleteData('bedrooms', id);
   }
+
+  // search bedrooms by name
+  searchBedrooms(String name) async {
+    return await _repository!.searchData('bedrooms', name);
+  }
 }
