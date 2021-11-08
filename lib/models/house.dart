@@ -9,7 +9,7 @@ class House {
   String? reporter;
   String? room_type;
   String? bedroom_type;
-  String? funiture_type;
+  String? furniture_type;
 
   // ignore: non_constant_identifier_names
   HouseMap() {
@@ -24,7 +24,7 @@ class House {
     mapping['reporter'] = reporter;
     mapping['room_type'] = room_type;
     mapping['bedroom_type'] = bedroom_type;
-    mapping['funiture_type'] = funiture_type;
+    mapping['furniture_type'] = furniture_type;
     return mapping;
   }
 }

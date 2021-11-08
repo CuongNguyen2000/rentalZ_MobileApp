@@ -55,21 +55,21 @@ class _FurnitureScreenState extends State<FurnitureScreen> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('Add Funiture'),
+            title: const Text('Add Furniture'),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 TextField(
                   controller: _furnitureNameController,
                   decoration: InputDecoration(
-                    labelText: 'Funiture Name',
+                    labelText: 'Furniture Name',
                   ),
                   autofocus: true,
                 ),
                 TextField(
                   controller: _furnitureDescriptionController,
                   decoration: InputDecoration(
-                    labelText: 'Funiture Description',
+                    labelText: 'Furniture Description',
                   ),
                   autofocus: true,
                 ),

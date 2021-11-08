@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rental_z/helpers/drawer_navigation.dart';
+import 'package:rental_z/screens/todo_screen.dart';
 import 'package:rental_z/services/bedroom_service.dart';
 import 'package:rental_z/services/house_service.dart';
 import 'package:rental_z/services/room_service.dart';
@@ -16,58 +17,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final _houseNameController = TextEditingController();
-  final _houseDescriptionController = TextEditingController();
-  final _housePriceController = TextEditingController();
-  final _houseAddressController = TextEditingController();
-  final _houseCityController = TextEditingController();
 
-  var _selectedRoom;
-  var _selectedBedroom;
-  var _selectedFurniture;
 
-  var _rooms = <DropdownMenuItem>[];
-  var _bedrooms = <DropdownMenuItem>[];
-  var _furnitures = <DropdownMenuItem>[];
-
-  _loadRooms() async {
-    var _roomService = RoomService();
-    var _rooms = await _roomService.getAllRooms();
-    for (var room in _rooms) {
-      setState(() {
-        _rooms.add(DropdownMenuItem(
-          child: Text(room.name),
-          value: room.name,
-        ));
-      });
-    }
-  }
-
-  _loadBedrooms() async {
-    var _bedroomService = BedroomService();
-    var _bedrooms = await _bedroomService.getAllBedrooms();
-    for (var bedroom in _bedrooms) {
-      setState(() {
-        _bedrooms.add(DropdownMenuItem(
-          child: Text(bedroom.name),
-          value: bedroom.name,
-        ));
-      });
-    }
-  }
-
-  _loadFurnitures() async {
-    var _furnitureService = FurnitureService();
-    var _furnitures = await _furnitureService.getAllFurnitures();
-    for (var furniture in _furnitures) {
-      setState(() {
-        _furnitures.add(DropdownMenuItem(
-          child: Text(furniture.name),
-          value: furniture.name,
-        ));
-      });
-    }
-  }
 
   HouseService? _houseService;
   List<House>? _houseList;
@@ -86,7 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
         model.address = house['address'];
         model.city = house['city'];
         model.bedroom_type = house['bedroom_type'];
-        model.funiture_type = house['funiture_type'];
+        model.furniture_type = house['furniture_type'];
         model.room_type = house['room_type'];
         _houseList!.add(model);
       });
@@ -94,28 +45,47 @@ class _HomeScreenState extends State<HomeScreen> {
     print(houses);
   }
 
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Home'),
         backgroundColor: Colors.orange,
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'HomeScreen',
-              style: Theme.of(context).textTheme.headline4,
+      // show card message if no house found
+      body: _houseList == null
+          ? Center(
+              child: Text('No house found'),
+            )
+          : ListView.builder(
+              itemCount: _houseList!.length,
+              itemBuilder: (context, index) {
+                return Card(
+                  child: ListTile(
+                    title: Text(_houseList![index].name!),
+                    subtitle: Text(_houseList![index].description!),
+                  ),
+                );
+              },
             ),
-          ],
-        ),
-      ),
+      // body: Center(
+      //   child: Column(
+      //     mainAxisAlignment: MainAxisAlignment.center,
+      //     children: <Widget>[
+      //       Text(
+      //         'HomeScreen',
+      //         style: Theme.of(context).textTheme.headline4,
+      //       ),
+      //     ],
+      //   ),
+      // ),
       drawer: DrawerNavigation(),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
         backgroundColor: Colors.orange,
-        onPressed: () => print("test"),
+        onPressed: () => Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => TodoScreen())),
       ),
     );
   }
