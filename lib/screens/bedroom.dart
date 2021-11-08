@@ -13,25 +13,21 @@ class BedroomScreen extends StatefulWidget {
 
 class _BedroomScreenState extends State<BedroomScreen> {
   // ignore: unused_field
-  var _bedroomNameController = TextEditingController();
-  var _bedroomDescriptionController = TextEditingController();
+  final _bedroomNameController = TextEditingController();
+  final _bedroomDescriptionController = TextEditingController();
 
-  var _bedroom = Bedroom();
-  var _bedroomService = BedroomService();
+  final _bedroom = Bedroom();
+  final _bedroomService = BedroomService();
 
   List<Bedroom> _bedroomList = <Bedroom>[];
 
-  var bedroom;
-  var _editBedroomNameController = TextEditingController();
-  var _editBedroomDescriptionController = TextEditingController();
+  final _editBedroomNameController = TextEditingController();
+  final _editBedroomDescriptionController = TextEditingController();
 
-  void initState() {
-    super.initState();
-    getAllBedrooms();
-  }
+  bool _isLoading = false;
 
   getAllBedrooms() async {
-    _bedroomList = <Bedroom>[];
+    _bedroomList = [];
     var bedrooms = await _bedroomService.getAllBedrooms();
     bedrooms.forEach((bedroom) {
       setState(() {
@@ -39,10 +35,18 @@ class _BedroomScreenState extends State<BedroomScreen> {
         bedroomModel.id = bedroom['id'];
         bedroomModel.name = bedroom['name'];
         bedroomModel.description = bedroom['description'];
+        // bedroomModel.createdAt = bedroom['createdAt'];
         _bedroomList.add(bedroomModel);
+        _isLoading = false;
       });
     });
+    // ignore: avoid_print
     print(bedrooms);
+  }
+
+  void initState() {
+    super.initState();
+    getAllBedrooms();
   }
 
   void _showForm(int? id) async {
@@ -60,12 +64,14 @@ class _BedroomScreenState extends State<BedroomScreen> {
                   decoration: InputDecoration(
                     labelText: 'Bedroom Name',
                   ),
+                  autofocus: true,
                 ),
                 TextField(
                   controller: _bedroomDescriptionController,
                   decoration: InputDecoration(
                     labelText: 'Bedroom Description',
                   ),
+                  autofocus: true,
                 ),
               ],
             ),
@@ -77,14 +83,55 @@ class _BedroomScreenState extends State<BedroomScreen> {
                 },
               ),
               TextButton(
-                child: const Text('Save'),
-                onPressed: () {
-                  setState(() {
+                child: const Text('Submit'),
+                onPressed: () async {
+                  if (_bedroomNameController.text.isEmpty) {
+                    await showDialog<String>(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Error'),
+                          content: const Text('Bedroom Name is required'),
+                          actions: <Widget>[
+                            TextButton(
+                              child: const Text('OK'),
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  } else if (_bedroomDescriptionController.text.isEmpty) {
+                    await showDialog<String>(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Error'),
+                          content:
+                              const Text('Bedroom Description is required'),
+                          actions: <Widget>[
+                            TextButton(
+                              child: const Text('OK'),
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  } else {
+                    setState(() {
+                      _isLoading = true;
+                    });
                     _bedroom.name = _bedroomNameController.text;
                     _bedroom.description = _bedroomDescriptionController.text;
-                    _bedroomService.insertBedroom(_bedroom);
+                    await _bedroomService.insertBedroom(_bedroom);
                     Navigator.pop(context);
-                  });
+                    getAllBedrooms();
+                  }
                 },
               ),
             ],
@@ -128,12 +175,14 @@ class _BedroomScreenState extends State<BedroomScreen> {
               TextButton(
                 child: const Text('Save'),
                 onPressed: () {
+                  //update bedroom by id
                   setState(() {
                     _bedroom.id = id;
                     _bedroom.name = _editBedroomNameController.text;
                     _bedroom.description =
                         _editBedroomDescriptionController.text;
                     _bedroomService.updateBedroom(_bedroom);
+                    getAllBedrooms();
                     Navigator.pop(context);
                   });
                 },
@@ -159,8 +208,9 @@ class _BedroomScreenState extends State<BedroomScreen> {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              Text(bedroom.name!),
-              Text(bedroom.description!),
+             Text('Name: ${bedroom.name}'),
+                Text('Description: ${bedroom.description}'),
+              // Text(bedroom.createdAt!),
             ],
           ),
           actions: <Widget>[
@@ -176,51 +226,152 @@ class _BedroomScreenState extends State<BedroomScreen> {
     );
   }
 
+  // message delete successfully
+  void _showDeleteMessage(int? id) {
+    if (id == null) {
+      return;
+    }
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Delete Bedroom'),
+          content: const Text('Are you sure you want to delete this bedroom?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            TextButton(
+              child: const Text('Delete'),
+              onPressed: () {
+                setState(() {
+                  _bedroomService.deleteBedroom(id);
+                  getAllBedrooms();
+                  Navigator.pop(context);
+                });
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // search bedrooms by name and return all bedrooms
+  void _searchBedrooms(String? name) {
+    if (name == null) {
+      getAllBedrooms();
+    } else {
+      _bedroomService.searchBedrooms(name).then((bedrooms) {
+        setState(() {
+          _bedroomList = bedrooms;
+        });
+      });
+    }
+  }
+
+  // void onSearchTextChanged(String text) {
+  //   List<Bedroom> results = [];
+  //   if (text.isEmpty) {
+  //     results = _bedroomList;
+  //   } else {
+  //     results = _bedroomList
+  //         .where((bedroom) =>
+  //             bedroom.name!.toLowerCase().contains(text.toLowerCase()))
+  //         .toList();
+  //   }
+  //   setState(() {
+  //     _bedroomList = results;
+  //   });
+  // }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Bedroom'),
         backgroundColor: Colors.orange,
-      ),
-      body: ListView.builder(
-        itemCount: _bedroomList.length,
-        itemBuilder: (context, index) {
-          return Card(
-            color: Colors.orange[200],
-            margin: const EdgeInsets.all(15),
-            child: ListTile(
-              title: Text(_bedroomList[index].name!),
-              subtitle: Text(_bedroomList[index].description!),
-              trailing: SizedBox(
-                width: 100,
-                child: Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.edit),
-                      onPressed: () {
-                        _showForm(_bedroomList[index].id);
-                      },
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.delete),
-                      onPressed: () {
-                        _bedroomService.deleteBedroom(_bedroomList[index].id);
-                        setState(() {
-                          _bedroomList.removeAt(index);
-                        });
-                      },
-                    ),
-                  ],
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Text(
+              'Bedroom',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            // Search bar
+            Container(
+              width: MediaQuery.of(context).size.width * 0.5,
+              child: TextField(
+                onChanged: (text) {
+                  _searchBedrooms(text);
+                },
+                decoration: InputDecoration(
+                  hintText: 'Search Bedroom',
+                  border: InputBorder.none,
+                  prefixIcon: Icon(Icons.search),
                 ),
               ),
-              onTap: () {
-                _showDetails(_bedroomList[index].id);
-              },
             ),
-          );
-        },
+          ],
+        ),
       ),
+      // show card message if no bedroom found
+      body: _isLoading
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : _bedroomList.length == 0
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        'No bedrooms found',
+                        style: Theme.of(context).textTheme.headline4,
+                      ),
+                    ],
+                  ),
+                )
+              : ListView.builder(
+                  itemCount: _bedroomList.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Card(
+                      color: Colors.orange[200],
+                      margin: const EdgeInsets.all(15),
+                      child: ListTile(
+                        title: Text(_bedroomList[index].name!),
+                        subtitle: Text(_bedroomList[index].description!),
+                        trailing: SizedBox(
+                          width: 100,
+                          child: Row(
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.edit),
+                                onPressed: () {
+                                  _showForm(_bedroomList[index].id);
+                                },
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.delete),
+                                onPressed: () {
+                                  _showDeleteMessage(_bedroomList[index].id);
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                        onTap: () {
+                          _showDetails(_bedroomList[index].id);
+                        },
+                      ),
+                    );
+                  },
+                ),
       drawer: DrawerNavigation(),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
