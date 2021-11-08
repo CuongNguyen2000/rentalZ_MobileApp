@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:rental_z/screens/bedroom.dart';
 import 'package:rental_z/screens/funiture_type.dart';
 import 'package:rental_z/screens/home.dart';
@@ -29,7 +31,6 @@ class _DrawerNavigationState extends State<DrawerNavigation> {
               ),
               accountName: Text('Nguyen Duc Cuong'),
               accountEmail: Text('cuongndgch18641@fpt.edu.vn'),
-              //change color to orange
               decoration: BoxDecoration(
                 color: Colors.orange,
               ),
@@ -41,7 +42,7 @@ class _DrawerNavigationState extends State<DrawerNavigation> {
                   .push(MaterialPageRoute(builder: (context) => HomeScreen())),
             ),
             ListTile(
-              leading: Icon(Icons.view_list),
+              leading: Icon(Icons.hotel),
               title: Text('Bedroom types'),
               onTap: () => Navigator.of(context).push(
                   MaterialPageRoute(builder: (context) => BedroomScreen())),
@@ -53,7 +54,7 @@ class _DrawerNavigationState extends State<DrawerNavigation> {
                   MaterialPageRoute(builder: (context) => FunitureScreen())),
             ),
             ListTile(
-              leading: Icon(Icons.view_list),
+              leading: Icon(Icons.room_service),
               title: Text('Room Types'),
               onTap: () => Navigator.of(context)
                   .push(MaterialPageRoute(builder: (context) => RoomScreen())),
