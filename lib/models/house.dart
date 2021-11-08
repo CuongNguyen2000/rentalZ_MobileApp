@@ -3,9 +3,10 @@ class House {
   String? name;
   String? address;
   String? city;
-  String? image;
+  // String? image;
   String? description;
-  String? price;
+  int? price;
+  String? reporter;
   String? room_type;
   String? bedroom_type;
   String? funiture_type;
@@ -17,9 +18,10 @@ class House {
     mapping['name'] = name;
     mapping['address'] = address;
     mapping['city'] = city;
-    mapping['image'] = image;
+    // mapping['image'] = image;
     mapping['description'] = description;
     mapping['price'] = price;
+    mapping['reporter'] = reporter;
     mapping['room_type'] = room_type;
     mapping['bedroom_type'] = bedroom_type;
     mapping['funiture_type'] = funiture_type;
