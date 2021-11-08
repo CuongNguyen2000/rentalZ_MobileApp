@@ -45,4 +45,10 @@ class Repository {
     Database? db = await database;
     return await db!.delete(table, where: 'id = ?', whereArgs: [id]);
   }
+
+  // Search data from database by name
+  searchData(table, name) async {
+    Database? db = await database;
+    return await db!.query(table, where: 'name LIKE ?', whereArgs: ['%$name%']);
+  }
 }
