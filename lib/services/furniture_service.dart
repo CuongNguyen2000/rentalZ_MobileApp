@@ -28,6 +28,7 @@ class FurnitureService {
     final data = {
       'name': name,
       'description': descrption,
+      'updated_at': DateTime.now().toString()
     };
     return await _repository!.updateData('furnitures', data, id);
   }
