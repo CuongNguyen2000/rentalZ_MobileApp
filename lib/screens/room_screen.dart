@@ -49,6 +49,12 @@ class _RoomScreennState extends State<RoomScreen> {
     getAllRooms();
   }
 
+  Future<void> _updateRoom(int id) async {
+    await _roomService.updateRoom(
+        id, _editRoomNameController.text, _editRoomDescriptionController.text);
+    getAllRooms();
+  }
+
   void _showForm(int? id) async {
     if (id == null) {
       await showDialog<String>(
@@ -127,9 +133,31 @@ class _RoomScreennState extends State<RoomScreen> {
                     });
                     _room.name = _roomNameController.text;
                     _room.description = _roomDescriptionController.text;
+                    _room.createdAt = DateTime.now().toString();
+                    _room.updatedAt = DateTime.now().toString();
                     var result = await _roomService.insertRoom(_room);
-                    Navigator.pop(context);
-                    getAllRooms();
+                    if (result == true) {
+                      Navigator.pop(context);
+                      getAllRooms();
+                    } else {
+                      await showDialog<String>(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: const Text('Error'),
+                            content: Text('Something went wrong'),
+                            actions: <Widget>[
+                              TextButton(
+                                child: const Text('OK'),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    }
                   }
                 },
               ),
@@ -138,6 +166,10 @@ class _RoomScreennState extends State<RoomScreen> {
         },
       );
     } else {
+      var room = _RoomList.firstWhere((room) => room.id == id);
+      _editRoomNameController.text = room.name!;
+      _editRoomDescriptionController.text = room.description!;
+
       await showDialog<String>(
         context: context,
         builder: (BuildContext context) {
@@ -149,17 +181,13 @@ class _RoomScreennState extends State<RoomScreen> {
                 TextField(
                   controller: _editRoomNameController,
                   decoration: InputDecoration(
-                    labelText: _RoomList.firstWhere(
-                      (room) => room.id == id,
-                    ).name,
+                    labelText: 'Room Name',
                   ),
                 ),
                 TextField(
                   controller: _editRoomDescriptionController,
                   decoration: InputDecoration(
-                    labelText: _RoomList.firstWhere(
-                      (room) => room.id == id,
-                    ).description,
+                    labelText: 'Room Description',
                   ),
                 ),
               ],
@@ -173,16 +201,11 @@ class _RoomScreennState extends State<RoomScreen> {
               ),
               TextButton(
                 child: const Text('Save'),
-                onPressed: () {
+                onPressed: () async {
                   //update bedroom by id
-                  setState(() {
-                    _room.id = id;
-                    _room.name = _editRoomNameController.text;
-                    _room.description = _editRoomDescriptionController.text;
-                    _roomService.updateRoom(_room);
-                    getAllRooms();
-                    Navigator.pop(context);
-                  });
+                  await _updateRoom(id);
+                  getAllRooms();
+                  Navigator.pop(context);
                 },
               ),
             ],
@@ -247,6 +270,9 @@ class _RoomScreennState extends State<RoomScreen> {
               onPressed: () {
                 setState(() {
                   _roomService.deleteRoom(id);
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text('Successfully deleted a room!'),
+                  ));
                   getAllRooms();
                   Navigator.pop(context);
                 });
@@ -293,7 +319,7 @@ class _RoomScreennState extends State<RoomScreen> {
           ? Center(
               child: CircularProgressIndicator(),
             )
-          : _RoomList.length == 0
+          : _RoomList.isEmpty
               ? Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,

@@ -23,8 +23,12 @@ class RoomService {
   }
 
   // Update rooms by id
-  updateRoom(Room room) async {
-    return await _repository!.updateData('rooms', room.id, room.RoomMap());
+  updateRoom(int id, String name, String descrption) async {
+    final data = {
+      'name': name,
+      'description': descrption,
+    };
+    return await _repository!.updateData('furnitures', data, id);
   }
 
   // Delete room by id

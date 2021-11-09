@@ -19,13 +19,17 @@ class FurnitureService {
 
   // Add furniture
   insertFurniture(Furniture furniture) async {
-    return await _repository!.insertData('furnitures', furniture.FurnitureMap());
+    return await _repository!
+        .insertData('furnitures', furniture.FurnitureMap());
   }
 
   // Update furniture
-  updateFurniture(Furniture furniture) async {
-    return await _repository!
-        .updateData('furnitures', furniture.id, furniture.FurnitureMap());
+  Future<int> updateFurniture(int id, String name, String descrption) async {
+    final data = {
+      'name': name,
+      'description': descrption,
+    };
+    return await _repository!.updateData('furnitures', data, id);
   }
 
   // Delete furniture

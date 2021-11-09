@@ -19,7 +19,7 @@ class _BedroomScreenState extends State<BedroomScreen> {
   final _bedroom = Bedroom();
   final _bedroomService = BedroomService();
 
-  List<Bedroom> _bedroomList = <Bedroom>[];
+  List<Bedroom>? _bedroomList;
 
   final _editBedroomNameController = TextEditingController();
   final _editBedroomDescriptionController = TextEditingController();
@@ -27,7 +27,7 @@ class _BedroomScreenState extends State<BedroomScreen> {
   bool _isLoading = false;
 
   getAllBedrooms() async {
-    _bedroomList = [];
+    _bedroomList = <Bedroom>[];
     var bedrooms = await _bedroomService.getAllBedrooms();
     bedrooms.forEach((bedroom) {
       setState(() {
@@ -36,7 +36,7 @@ class _BedroomScreenState extends State<BedroomScreen> {
         bedroomModel.name = bedroom['name'];
         bedroomModel.description = bedroom['description'];
         // bedroomModel.createdAt = bedroom['createdAt'];
-        _bedroomList.add(bedroomModel);
+        _bedroomList!.add(bedroomModel);
         _isLoading = false;
       });
     });
@@ -44,8 +44,18 @@ class _BedroomScreenState extends State<BedroomScreen> {
     print(bedrooms);
   }
 
-  void initState() {
+  List<Bedroom>? _findItem;
+
+  @override
+  initState() {
     super.initState();
+    getAllBedrooms();
+    _findItem = _bedroomList;
+  }
+
+  Future<void> _updateBedroom(int id) async {
+    await _bedroomService.updateBedroom(id, _editBedroomNameController.text,
+        _editBedroomDescriptionController.text);
     getAllBedrooms();
   }
 
@@ -128,9 +138,31 @@ class _BedroomScreenState extends State<BedroomScreen> {
                     });
                     _bedroom.name = _bedroomNameController.text;
                     _bedroom.description = _bedroomDescriptionController.text;
-                    await _bedroomService.insertBedroom(_bedroom);
-                    Navigator.pop(context);
-                    getAllBedrooms();
+                    _bedroom.createdAt = DateTime.now().toString();
+                    _bedroom.updatedAt = DateTime.now().toString();
+                    var results = await _bedroomService.insertBedroom(_bedroom);
+                    if (results == null) {
+                      await showDialog<String>(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: const Text('Error'),
+                            content: const Text('Something went wrong'),
+                            actions: <Widget>[
+                              TextButton(
+                                child: const Text('OK'),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    } else {
+                      Navigator.pop(context);
+                      getAllBedrooms();
+                    }
                   }
                 },
               ),
@@ -139,6 +171,10 @@ class _BedroomScreenState extends State<BedroomScreen> {
         },
       );
     } else {
+      var bedroom = _bedroomList!.firstWhere((bedroom) => bedroom.id == id);
+      _editBedroomNameController.text = bedroom.name!;
+      _editBedroomDescriptionController.text = bedroom.description!;
+
       await showDialog<String>(
         context: context,
         builder: (BuildContext context) {
@@ -150,17 +186,13 @@ class _BedroomScreenState extends State<BedroomScreen> {
                 TextField(
                   controller: _editBedroomNameController,
                   decoration: InputDecoration(
-                    labelText: _bedroomList
-                        .firstWhere((bedroom) => bedroom.id == id)
-                        .name,
+                    labelText: 'Bedroom Name',
                   ),
                 ),
                 TextField(
                   controller: _editBedroomDescriptionController,
                   decoration: InputDecoration(
-                    labelText: _bedroomList
-                        .firstWhere((bedroom) => bedroom.id == id)
-                        .description,
+                    labelText: 'Bedroom Description',
                   ),
                 ),
               ],
@@ -174,17 +206,12 @@ class _BedroomScreenState extends State<BedroomScreen> {
               ),
               TextButton(
                 child: const Text('Save'),
-                onPressed: () {
+                onPressed: () async {
                   //update bedroom by id
-                  setState(() {
-                    _bedroom.id = id;
-                    _bedroom.name = _editBedroomNameController.text;
-                    _bedroom.description =
-                        _editBedroomDescriptionController.text;
-                    _bedroomService.updateBedroom(_bedroom);
-                    getAllBedrooms();
-                    Navigator.pop(context);
-                  });
+                  await _updateBedroom(id);
+                  // return new list of bedrooms
+                  getAllBedrooms();
+                  Navigator.pop(context);
                 },
               ),
             ],
@@ -199,19 +226,19 @@ class _BedroomScreenState extends State<BedroomScreen> {
     if (id == null) {
       return;
     }
-    var bedroom = _bedroomList.firstWhere((bedroom) => bedroom.id == id);
+    var bedroom = _findItem!.firstWhere((bedroom) => bedroom.id == id);
     showDialog<String>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Bedroom Details'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-             Text('Name: ${bedroom.name}'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Name: ${bedroom.name}'),
                 Text('Description: ${bedroom.description}'),
-              // Text(bedroom.createdAt!),
-            ],
+              ],
+            ),
           ),
           actions: <Widget>[
             TextButton(
@@ -249,6 +276,10 @@ class _BedroomScreenState extends State<BedroomScreen> {
               onPressed: () {
                 setState(() {
                   _bedroomService.deleteBedroom(id);
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text('Successfully deleted a bedroom!'),
+                  ));
+                  _findItem!.removeWhere((item) => item.id == id);
                   getAllBedrooms();
                   Navigator.pop(context);
                 });
@@ -261,32 +292,20 @@ class _BedroomScreenState extends State<BedroomScreen> {
   }
 
   // search bedrooms by name and return all bedrooms
-  void _searchBedrooms(String? name) {
-    if (name == null) {
-      getAllBedrooms();
+  void _searchBedrooms(String name) {
+    List<Bedroom> results = [];
+    if (name.isEmpty) {
+      results = _bedroomList!;
     } else {
-      _bedroomService.searchBedrooms(name).then((bedrooms) {
-        setState(() {
-          _bedroomList = bedrooms;
-        });
-      });
+      results = _bedroomList!
+          .where(
+              (item) => item.name!.toLowerCase().contains(name.toLowerCase()))
+          .toList();
     }
+    setState(() {
+      _findItem = results;
+    });
   }
-
-  // void onSearchTextChanged(String text) {
-  //   List<Bedroom> results = [];
-  //   if (text.isEmpty) {
-  //     results = _bedroomList;
-  //   } else {
-  //     results = _bedroomList
-  //         .where((bedroom) =>
-  //             bedroom.name!.toLowerCase().contains(text.toLowerCase()))
-  //         .toList();
-  //   }
-  //   setState(() {
-  //     _bedroomList = results;
-  //   });
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -325,7 +344,7 @@ class _BedroomScreenState extends State<BedroomScreen> {
           ? Center(
               child: CircularProgressIndicator(),
             )
-          : _bedroomList.length == 0
+          : _bedroomList!.isEmpty
               ? Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -338,14 +357,14 @@ class _BedroomScreenState extends State<BedroomScreen> {
                   ),
                 )
               : ListView.builder(
-                  itemCount: _bedroomList.length,
+                  itemCount: _findItem?.length,
                   itemBuilder: (BuildContext context, int index) {
                     return Card(
                       color: Colors.orange[200],
                       margin: const EdgeInsets.all(15),
                       child: ListTile(
-                        title: Text(_bedroomList[index].name!),
-                        subtitle: Text(_bedroomList[index].description!),
+                        title: Text(_findItem?[index].name ?? ''),
+                        subtitle: Text(_findItem?[index].description ?? ''),
                         trailing: SizedBox(
                           width: 100,
                           child: Row(
@@ -353,20 +372,20 @@ class _BedroomScreenState extends State<BedroomScreen> {
                               IconButton(
                                 icon: const Icon(Icons.edit),
                                 onPressed: () {
-                                  _showForm(_bedroomList[index].id);
+                                  _showForm(_findItem?[index].id);
                                 },
                               ),
                               IconButton(
                                 icon: const Icon(Icons.delete),
                                 onPressed: () {
-                                  _showDeleteMessage(_bedroomList[index].id);
+                                  _showDeleteMessage(_findItem?[index].id);
                                 },
                               ),
                             ],
                           ),
                         ),
                         onTap: () {
-                          _showDetails(_bedroomList[index].id);
+                          _showDetails(_findItem?[index].id);
                         },
                       ),
                     );

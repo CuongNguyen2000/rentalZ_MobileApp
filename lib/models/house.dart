@@ -10,6 +10,8 @@ class House {
   String? room_type;
   String? bedroom_type;
   String? furniture_type;
+  String? createdAt;
+  String? updatedAt;
 
   // ignore: non_constant_identifier_names
   HouseMap() {
@@ -25,6 +27,8 @@ class House {
     mapping['room_type'] = room_type;
     mapping['bedroom_type'] = bedroom_type;
     mapping['furniture_type'] = furniture_type;
+    mapping['created_at'] = createdAt;
+    mapping['updated_at'] = updatedAt;
     return mapping;
   }
 }

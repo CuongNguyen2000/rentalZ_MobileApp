@@ -14,15 +14,15 @@ class DatabaseConnection {
 
   _onCreate(Database db, int version) async {
     await db.execute(
-        'CREATE TABLE houses(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, name TEXT, address TEXT, city TEXT, description TEXT, price INTEGER, reporter TEXT, room_type TEXT, bedroom_type TEXT, furniture_type TEXT)');
+        'CREATE TABLE houses(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, name TEXT, address TEXT, city TEXT, description TEXT, price INTEGER, reporter TEXT, room_type TEXT, bedroom_type TEXT, furniture_type TEXT, created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)');
 
     await db.execute(
-        'CREATE TABLE bedrooms(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, name TEXT, description TEXT)');
+        'CREATE TABLE bedrooms(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, name TEXT, description TEXT, created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)');
 
     await db.execute(
-        'CREATE TABLE rooms(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, name TEXT, description TEXT)');
+        'CREATE TABLE rooms(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, name TEXT, description TEXT, created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)');
 
     await db.execute(
-        'CREATE TABLE furnitures(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, name TEXT, description TEXT)');
+        'CREATE TABLE furnitures(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, name TEXT, description TEXT, created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)');
   }
 }

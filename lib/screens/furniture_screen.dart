@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:rental_z/helpers/drawer_navigation.dart';
 import 'package:rental_z/models/furniture.dart';
 import 'package:rental_z/services/furniture_service.dart';
@@ -15,6 +16,7 @@ class _FurnitureScreenState extends State<FurnitureScreen> {
   // ignore: unused_field
   final _furnitureNameController = TextEditingController();
   final _furnitureDescriptionController = TextEditingController();
+  final _furnitureCreatedAtController = TextEditingController();
 
   final _furniture = Furniture();
   final _furnitureService = FurnitureService();
@@ -36,6 +38,8 @@ class _FurnitureScreenState extends State<FurnitureScreen> {
         furnitureModel.id = bedroom['id'];
         furnitureModel.name = bedroom['name'];
         furnitureModel.description = bedroom['description'];
+        furnitureModel.createdAt = bedroom['created_at'];
+        furnitureModel.updatedAt = bedroom['updated_at'];
         _FurnitureList.add(furnitureModel);
         _isLoading = false;
       });
@@ -46,6 +50,14 @@ class _FurnitureScreenState extends State<FurnitureScreen> {
 
   void initState() {
     super.initState();
+    getAllFurnitures();
+  }
+
+  Future<void> _updateFurniture(int id) async {
+    await _furnitureService.updateFurniture(
+        id,
+        _editFurnitureNameController.text,
+        _editFurnitureDescriptionController.text);
     getAllFurnitures();
   }
 
@@ -126,7 +138,10 @@ class _FurnitureScreenState extends State<FurnitureScreen> {
                       _isLoading = true;
                     });
                     _furniture.name = _furnitureNameController.text;
-                    _furniture.description = _furnitureDescriptionController.text;
+                    _furniture.description =
+                        _furnitureDescriptionController.text;
+                    _furniture.createdAt = DateTime.now().toString();
+                    _furniture.updatedAt = DateTime.now().toString();
                     await _furnitureService.insertFurniture(_furniture);
                     Navigator.pop(context);
                     getAllFurnitures();
@@ -138,26 +153,30 @@ class _FurnitureScreenState extends State<FurnitureScreen> {
         },
       );
     } else {
+      var furniture =
+          _FurnitureList.firstWhere((furniture) => furniture.id == id);
+      _editFurnitureNameController.text = furniture.name!;
+      _editFurnitureDescriptionController.text = furniture.description!;
+
       await showDialog<String>(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('Edit Bedroom'),
+            title: const Text('Edit Furniture'),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
+                // display the current value in the TextField
                 TextField(
                   controller: _editFurnitureNameController,
                   decoration: InputDecoration(
-                    labelText: _FurnitureList.firstWhere(
-                        (furniture) => furniture.id == id).name,
+                    labelText: 'Furniture Name',
                   ),
                 ),
                 TextField(
                   controller: _editFurnitureDescriptionController,
                   decoration: InputDecoration(
-                    labelText: _FurnitureList.firstWhere(
-                        (furniture) => furniture.id == id).description,
+                    labelText: 'Furniture Description',
                   ),
                 ),
               ],
@@ -171,18 +190,11 @@ class _FurnitureScreenState extends State<FurnitureScreen> {
               ),
               TextButton(
                 child: const Text('Save'),
-                onPressed: () {
+                onPressed: () async {
                   //update bedroom by id
-                  setState(() {
-                    _furniture.id = id;
-                    _furniture.name = _editFurnitureNameController.text;
-                    _furniture.description =
-                        _editFurnitureDescriptionController.text;
-
-                    _furnitureService.updateFurniture(_furniture);
-                    getAllFurnitures();
-                    Navigator.pop(context);
-                  });
+                  await _updateFurniture(id);
+                  getAllFurnitures();
+                  Navigator.pop(context);
                 },
               ),
             ],
@@ -197,17 +209,22 @@ class _FurnitureScreenState extends State<FurnitureScreen> {
     if (id == null) {
       return;
     }
-    var furniture = _FurnitureList.firstWhere((furniture) => furniture.id == id);
+    var furniture =
+        _FurnitureList.firstWhere((furniture) => furniture.id == id);
     showDialog<String>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Furniture Details'),
+          // SingleChildScrollView with ListBody to prevent overflow and show createdAt with format date
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text('Name: ${furniture.name}'),
-                Text('Description: ${furniture.description}'),
+                Text('Furniture Name: ${furniture.name}'),
+                Text('Furniture Description: ${furniture.description}'),
+                Text(
+                  'Created At: ${DateFormat('dd-MM-yyyy').format(DateTime.parse(furniture.createdAt!))}',
+                ),
               ],
             ),
           ),
@@ -247,6 +264,9 @@ class _FurnitureScreenState extends State<FurnitureScreen> {
               onPressed: () {
                 setState(() {
                   _furnitureService.deleteFurniture(id);
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text('Successfully deleted a furniture!'),
+                  ));
                   getAllFurnitures();
                   Navigator.pop(context);
                 });
@@ -293,7 +313,7 @@ class _FurnitureScreenState extends State<FurnitureScreen> {
           ? Center(
               child: CircularProgressIndicator(),
             )
-          : _FurnitureList.length == 0
+          : _FurnitureList.isEmpty
               ? Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,

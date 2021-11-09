@@ -23,9 +23,12 @@ class BedroomService {
   }
 
   // Update bedroom
-  updateBedroom(Bedroom bedroom) async {
-    return await _repository!
-        .updateData('bedrooms', bedroom.id, bedroom.BedroomMap());
+  Future<int> updateBedroom(int id, String name, String descrption) async {
+    final data = {
+      'name': name,
+      'description': descrption,
+    };
+    return await _repository!.updateData('bedrooms', data, id);
   }
 
   // Delete bedroom
