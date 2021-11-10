@@ -11,8 +11,8 @@ class Bedroom {
     mapping['id'] = id;
     mapping['name'] = name;
     mapping['description'] = description;
-    mapping['createdAt'] = createdAt;
-    mapping['updatedAt'] = updatedAt;
+    mapping['created_at'] = createdAt;
+    mapping['updated_at'] = updatedAt;
     return mapping;
   }
 }

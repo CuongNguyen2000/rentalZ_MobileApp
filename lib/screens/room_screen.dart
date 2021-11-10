@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:rental_z/helpers/drawer_navigation.dart';
 import 'package:rental_z/models/room.dart';
 import 'package:rental_z/services/room_service.dart';
@@ -13,19 +14,18 @@ class RoomScreen extends StatefulWidget {
 
 class _RoomScreennState extends State<RoomScreen> {
   // ignore: unused_field
-  final _roomNameController = TextEditingController();
-  final _roomDescriptionController = TextEditingController();
+  final TextEditingController _roomNameController = TextEditingController();
+  final TextEditingController _roomDescriptionController =
+      TextEditingController();
 
   final _room = Room();
   final _roomService = RoomService();
 
   // ignore: non_constant_identifier_names
-  List<Room> _RoomList = <Room>[];
+  List<Room> _RoomList = [];
+  List<Room>? _findItems;
 
-  final _editRoomNameController = TextEditingController();
-  final _editRoomDescriptionController = TextEditingController();
-
-  bool _isLoading = false;
+  bool _isLoading = true;
 
   getAllRooms() async {
     _RoomList = [];
@@ -36,7 +36,10 @@ class _RoomScreennState extends State<RoomScreen> {
         roomModel.id = bedroom['id'];
         roomModel.name = bedroom['name'];
         roomModel.description = bedroom['description'];
+        roomModel.createdAt = bedroom['created_at'];
+        roomModel.updatedAt = bedroom['updated_at'];
         _RoomList.add(roomModel);
+        _findItems = _RoomList;
         _isLoading = false;
       });
     });
@@ -44,6 +47,7 @@ class _RoomScreennState extends State<RoomScreen> {
     print(rooms);
   }
 
+  @override
   void initState() {
     super.initState();
     getAllRooms();
@@ -51,46 +55,51 @@ class _RoomScreennState extends State<RoomScreen> {
 
   Future<void> _updateRoom(int id) async {
     await _roomService.updateRoom(
-        id, _editRoomNameController.text, _editRoomDescriptionController.text);
-    getAllRooms();
+        id, _roomNameController.text, _roomDescriptionController.text);
   }
 
   void _showForm(int? id) async {
-    if (id == null) {
-      await showDialog<String>(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('Add Room'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                TextField(
-                  controller: _roomNameController,
-                  decoration: InputDecoration(
-                    labelText: 'Room Name',
-                  ),
-                  autofocus: true,
+    if (id != null) {
+      var room = _RoomList.firstWhere((room) => room.id == id);
+      _roomNameController.text = room.name!;
+      _roomDescriptionController.text = room.description!;
+    }
+
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(id == null ? 'Add Room' : 'Edit Room'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              TextField(
+                controller: _roomNameController,
+                decoration: InputDecoration(
+                  labelText: 'Room Name',
                 ),
-                TextField(
-                  controller: _roomDescriptionController,
-                  decoration: InputDecoration(
-                    labelText: 'Room Description',
-                  ),
-                  autofocus: true,
-                ),
-              ],
-            ),
-            actions: <Widget>[
-              TextButton(
-                child: const Text('Cancel'),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
+                autofocus: true,
               ),
-              TextButton(
-                child: const Text('Submit'),
-                onPressed: () async {
+              TextField(
+                controller: _roomDescriptionController,
+                decoration: InputDecoration(
+                  labelText: 'Room Description',
+                ),
+                autofocus: true,
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            TextButton(
+              child: Text(id == null ? 'Create New' : 'Update'),
+              onPressed: () async {
+                if (id == null) {
                   if (_roomNameController.text.isEmpty) {
                     await showDialog<String>(
                       context: context,
@@ -128,91 +137,30 @@ class _RoomScreennState extends State<RoomScreen> {
                       },
                     );
                   } else {
-                    setState(() {
-                      _isLoading = true;
-                    });
                     _room.name = _roomNameController.text;
                     _room.description = _roomDescriptionController.text;
                     _room.createdAt = DateTime.now().toString();
                     _room.updatedAt = DateTime.now().toString();
-                    var result = await _roomService.insertRoom(_room);
-                    if (result == true) {
-                      Navigator.pop(context);
-                      getAllRooms();
-                    } else {
-                      await showDialog<String>(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: const Text('Error'),
-                            content: Text('Something went wrong'),
-                            actions: <Widget>[
-                              TextButton(
-                                child: const Text('OK'),
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    }
+                    await _roomService.insertRoom(_room);
                   }
-                },
-              ),
-            ],
-          );
-        },
-      );
-    } else {
-      var room = _RoomList.firstWhere((room) => room.id == id);
-      _editRoomNameController.text = room.name!;
-      _editRoomDescriptionController.text = room.description!;
+                }
 
-      await showDialog<String>(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('Edit Room'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                TextField(
-                  controller: _editRoomNameController,
-                  decoration: InputDecoration(
-                    labelText: 'Room Name',
-                  ),
-                ),
-                TextField(
-                  controller: _editRoomDescriptionController,
-                  decoration: InputDecoration(
-                    labelText: 'Room Description',
-                  ),
-                ),
-              ],
-            ),
-            actions: <Widget>[
-              TextButton(
-                child: const Text('Cancel'),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-              TextButton(
-                child: const Text('Save'),
-                onPressed: () async {
-                  //update bedroom by id
+                if (id != null) {
                   await _updateRoom(id);
-                  getAllRooms();
-                  Navigator.pop(context);
-                },
-              ),
-            ],
-          );
-        },
-      );
-    }
+                }
+
+                // Clear the text fields
+                _roomNameController.text = '';
+                _roomDescriptionController.text = '';
+
+                Navigator.pop(context);
+                getAllRooms();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   // Show room details by id
@@ -231,6 +179,9 @@ class _RoomScreennState extends State<RoomScreen> {
               children: <Widget>[
                 Text('Name: ${room.name}'),
                 Text('Description: ${room.description}'),
+                Text(
+                  'Created At: ${DateFormat('dd-MM-yyyy').format(DateTime.parse(room.createdAt!))}',
+                ),
               ],
             ),
           ),
@@ -284,6 +235,20 @@ class _RoomScreennState extends State<RoomScreen> {
     );
   }
 
+  void _searchRoom(String name) {
+    List<Room> results = [];
+    if (name.isEmpty) {
+      results = _RoomList;
+    } else {
+      results = _RoomList.where(
+              (item) => item.name!.toLowerCase().contains(name.toLowerCase()))
+          .toList();
+    }
+    setState(() {
+      _findItems = results;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -292,7 +257,7 @@ class _RoomScreennState extends State<RoomScreen> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Text(
+            const Text(
               'Rooms',
               style: TextStyle(
                 fontSize: 20,
@@ -303,8 +268,10 @@ class _RoomScreennState extends State<RoomScreen> {
             Container(
               width: MediaQuery.of(context).size.width * 0.5,
               child: TextField(
-                onChanged: (text) {},
-                decoration: InputDecoration(
+                onChanged: (text) {
+                  _searchRoom(text);
+                },
+                decoration: const InputDecoration(
                   hintText: 'Search room',
                   border: InputBorder.none,
                   prefixIcon: Icon(Icons.search),
@@ -317,55 +284,51 @@ class _RoomScreennState extends State<RoomScreen> {
       // show card message if no bedroom found
       body: _isLoading
           ? Center(
-              child: CircularProgressIndicator(),
-            )
-          : _RoomList.isEmpty
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text(
-                        'No Rooms Found',
-                        style: Theme.of(context).textTheme.headline4,
-                      ),
-                    ],
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    'No Rooms Found',
+                    style: Theme.of(context).textTheme.headline4,
                   ),
-                )
-              : ListView.builder(
-                  itemCount: _RoomList.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return Card(
-                      color: Colors.orange[200],
-                      margin: const EdgeInsets.all(15),
-                      child: ListTile(
-                        title: Text(_RoomList[index].name!),
-                        subtitle: Text(_RoomList[index].description!),
-                        trailing: SizedBox(
-                          width: 100,
-                          child: Row(
-                            children: [
-                              IconButton(
-                                icon: const Icon(Icons.edit),
-                                onPressed: () {
-                                  _showForm(_RoomList[index].id);
-                                },
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.delete),
-                                onPressed: () {
-                                  _showDeleteMessage(_RoomList[index].id);
-                                },
-                              ),
-                            ],
+                ],
+              ),
+            )
+          : ListView.builder(
+              itemCount: _findItems?.length,
+              itemBuilder: (BuildContext context, int index) {
+                return Card(
+                  color: Colors.orange[200],
+                  margin: const EdgeInsets.all(15),
+                  child: ListTile(
+                    title: Text(_findItems?[index].name ?? ''),
+                    subtitle: Text(_findItems?[index].description ?? ''),
+                    trailing: SizedBox(
+                      width: 100,
+                      child: Row(
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.edit),
+                            onPressed: () {
+                              _showForm(_findItems?[index].id);
+                            },
                           ),
-                        ),
-                        onTap: () {
-                          _showDetails(_RoomList[index].id);
-                        },
+                          IconButton(
+                            icon: const Icon(Icons.delete),
+                            onPressed: () {
+                              _showDeleteMessage(_findItems?[index].id);
+                            },
+                          ),
+                        ],
                       ),
-                    );
-                  },
-                ),
+                    ),
+                    onTap: () {
+                      _showDetails(_findItems?[index].id);
+                    },
+                  ),
+                );
+              },
+            ),
       drawer: DrawerNavigation(),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),

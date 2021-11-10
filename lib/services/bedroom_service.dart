@@ -27,6 +27,7 @@ class BedroomService {
     final data = {
       'name': name,
       'description': descrption,
+      'updated_at': DateTime.now().toString()
     };
     return await _repository!.updateData('bedrooms', data, id);
   }

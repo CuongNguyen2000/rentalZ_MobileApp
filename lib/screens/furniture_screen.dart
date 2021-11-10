@@ -14,20 +14,19 @@ class FurnitureScreen extends StatefulWidget {
 
 class _FurnitureScreenState extends State<FurnitureScreen> {
   // ignore: unused_field
-  final _furnitureNameController = TextEditingController();
-  final _furnitureDescriptionController = TextEditingController();
-  final _furnitureCreatedAtController = TextEditingController();
+  final TextEditingController _furnitureNameController =
+      TextEditingController();
+  final TextEditingController _furnitureDescriptionController =
+      TextEditingController();
 
   final _furniture = Furniture();
   final _furnitureService = FurnitureService();
 
   // ignore: non_constant_identifier_names
-  List<Furniture> _FurnitureList = <Furniture>[];
+  List<Furniture> _FurnitureList = [];
+  List<Furniture>? _findItems;
 
-  final _editFurnitureNameController = TextEditingController();
-  final _editFurnitureDescriptionController = TextEditingController();
-
-  bool _isLoading = false;
+  bool _isLoading = true;
 
   getAllFurnitures() async {
     _FurnitureList = [];
@@ -41,6 +40,7 @@ class _FurnitureScreenState extends State<FurnitureScreen> {
         furnitureModel.createdAt = bedroom['created_at'];
         furnitureModel.updatedAt = bedroom['updated_at'];
         _FurnitureList.add(furnitureModel);
+        _findItems = _FurnitureList;
         _isLoading = false;
       });
     });
@@ -48,26 +48,30 @@ class _FurnitureScreenState extends State<FurnitureScreen> {
     print(furnitures);
   }
 
+  @override
   void initState() {
     super.initState();
     getAllFurnitures();
   }
 
   Future<void> _updateFurniture(int id) async {
-    await _furnitureService.updateFurniture(
-        id,
-        _editFurnitureNameController.text,
-        _editFurnitureDescriptionController.text);
-    getAllFurnitures();
+    await _furnitureService.updateFurniture(id, _furnitureNameController.text,
+        _furnitureDescriptionController.text);
   }
 
   void _showForm(int? id) async {
-    if (id == null) {
-      await showDialog<String>(
+    if (id != null) {
+      var furniture =
+          _FurnitureList.firstWhere((furniture) => furniture.id == id);
+      _furnitureNameController.text = furniture.name!;
+      _furnitureDescriptionController.text = furniture.description!;
+    }
+
+    showDialog<String>(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('Add Furniture'),
+            title: Text(id == null ? 'Add Furniture' : 'Edit Furniture'),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
@@ -95,113 +99,70 @@ class _FurnitureScreenState extends State<FurnitureScreen> {
                 },
               ),
               TextButton(
-                child: const Text('Submit'),
+                child: Text(id == null ? 'Create New' : 'Update'),
                 onPressed: () async {
-                  if (_furnitureNameController.text.isEmpty) {
-                    await showDialog<String>(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: const Text('Error'),
-                          content: Text('Furniture Name is required'),
-                          actions: <Widget>[
-                            TextButton(
-                              child: const Text('OK'),
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  } else if (_furnitureDescriptionController.text.isEmpty) {
-                    await showDialog<String>(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: const Text('Error'),
-                          content: Text('Furniture Description is required'),
-                          actions: <Widget>[
-                            TextButton(
-                              child: const Text('OK'),
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  } else {
-                    setState(() {
-                      _isLoading = true;
-                    });
-                    _furniture.name = _furnitureNameController.text;
-                    _furniture.description =
-                        _furnitureDescriptionController.text;
-                    _furniture.createdAt = DateTime.now().toString();
-                    _furniture.updatedAt = DateTime.now().toString();
-                    await _furnitureService.insertFurniture(_furniture);
-                    Navigator.pop(context);
-                    getAllFurnitures();
+                  if (id == null) {
+                    if (_furnitureNameController.text.isEmpty) {
+                      await showDialog<String>(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: const Text('Error'),
+                            content: Text('Furniture Name is required'),
+                            actions: <Widget>[
+                              TextButton(
+                                child: const Text('OK'),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    } else if (_furnitureDescriptionController.text.isEmpty) {
+                      await showDialog<String>(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: const Text('Error'),
+                            content: Text('Furniture Description is required'),
+                            actions: <Widget>[
+                              TextButton(
+                                child: const Text('OK'),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    } else {
+                      _furniture.name = _furnitureNameController.text;
+                      _furniture.description =
+                          _furnitureDescriptionController.text;
+                      _furniture.createdAt = DateTime.now().toString();
+                      _furniture.updatedAt = DateTime.now().toString();
+                      await _furnitureService.insertFurniture(_furniture);
+                    }
                   }
-                },
-              ),
-            ],
-          );
-        },
-      );
-    } else {
-      var furniture =
-          _FurnitureList.firstWhere((furniture) => furniture.id == id);
-      _editFurnitureNameController.text = furniture.name!;
-      _editFurnitureDescriptionController.text = furniture.description!;
 
-      await showDialog<String>(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('Edit Furniture'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                // display the current value in the TextField
-                TextField(
-                  controller: _editFurnitureNameController,
-                  decoration: InputDecoration(
-                    labelText: 'Furniture Name',
-                  ),
-                ),
-                TextField(
-                  controller: _editFurnitureDescriptionController,
-                  decoration: InputDecoration(
-                    labelText: 'Furniture Description',
-                  ),
-                ),
-              ],
-            ),
-            actions: <Widget>[
-              TextButton(
-                child: const Text('Cancel'),
-                onPressed: () {
+                  if (id != null) {
+                    await _updateFurniture(id);
+                  }
+
+                  // Clear the text fields
+                  _furnitureNameController.text = '';
+                  _furnitureDescriptionController.text = '';
+
                   Navigator.pop(context);
-                },
-              ),
-              TextButton(
-                child: const Text('Save'),
-                onPressed: () async {
-                  //update bedroom by id
-                  await _updateFurniture(id);
                   getAllFurnitures();
-                  Navigator.pop(context);
                 },
               ),
             ],
           );
-        },
-      );
-    }
+        });
   }
 
   // Show furniture details by id
@@ -216,7 +177,6 @@ class _FurnitureScreenState extends State<FurnitureScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Furniture Details'),
-          // SingleChildScrollView with ListBody to prevent overflow and show createdAt with format date
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
@@ -230,7 +190,7 @@ class _FurnitureScreenState extends State<FurnitureScreen> {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('Close'),
+              child: const Text('Close'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -278,6 +238,20 @@ class _FurnitureScreenState extends State<FurnitureScreen> {
     );
   }
 
+  void _searchFurniture(String name) {
+    List<Furniture> results = [];
+    if (name.isEmpty) {
+      results = _FurnitureList;
+    } else {
+      results = _FurnitureList.where(
+              (item) => item.name!.toLowerCase().contains(name.toLowerCase()))
+          .toList();
+    }
+    setState(() {
+      _findItems = results;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -297,7 +271,9 @@ class _FurnitureScreenState extends State<FurnitureScreen> {
             Container(
               width: MediaQuery.of(context).size.width * 0.5,
               child: TextField(
-                onChanged: (text) {},
+                onChanged: (text) {
+                  _searchFurniture(text);
+                },
                 decoration: InputDecoration(
                   hintText: 'Search furniture',
                   border: InputBorder.none,
@@ -311,55 +287,52 @@ class _FurnitureScreenState extends State<FurnitureScreen> {
       // show card message if no bedroom found
       body: _isLoading
           ? Center(
-              child: CircularProgressIndicator(),
-            )
-          : _FurnitureList.isEmpty
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text(
-                        'No Furniture Found',
-                        style: Theme.of(context).textTheme.headline4,
-                      ),
-                    ],
+              // child: CircularProgressIndicator(),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    'No Furniture Found',
+                    style: Theme.of(context).textTheme.headline4,
                   ),
-                )
-              : ListView.builder(
-                  itemCount: _FurnitureList.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return Card(
-                      color: Colors.orange[200],
-                      margin: const EdgeInsets.all(15),
-                      child: ListTile(
-                        title: Text(_FurnitureList[index].name!),
-                        subtitle: Text(_FurnitureList[index].description!),
-                        trailing: SizedBox(
-                          width: 100,
-                          child: Row(
-                            children: [
-                              IconButton(
-                                icon: const Icon(Icons.edit),
-                                onPressed: () {
-                                  _showForm(_FurnitureList[index].id);
-                                },
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.delete),
-                                onPressed: () {
-                                  _showDeleteMessage(_FurnitureList[index].id);
-                                },
-                              ),
-                            ],
+                ],
+              ),
+            )
+          : ListView.builder(
+              itemCount: _findItems?.length,
+              itemBuilder: (BuildContext context, int index) {
+                return Card(
+                  color: Colors.orange[200],
+                  margin: const EdgeInsets.all(15),
+                  child: ListTile(
+                    title: Text(_findItems?[index].name ?? ''),
+                    subtitle: Text(_findItems?[index].description ?? ''),
+                    trailing: SizedBox(
+                      width: 100,
+                      child: Row(
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.edit),
+                            onPressed: () {
+                              _showForm(_findItems?[index].id);
+                            },
                           ),
-                        ),
-                        onTap: () {
-                          _showDetails(_FurnitureList[index].id);
-                        },
+                          IconButton(
+                            icon: const Icon(Icons.delete),
+                            onPressed: () {
+                              _showDeleteMessage(_findItems?[index].id);
+                            },
+                          ),
+                        ],
                       ),
-                    );
-                  },
-                ),
+                    ),
+                    onTap: () {
+                      _showDetails(_findItems?[index].id);
+                    },
+                  ),
+                );
+              },
+            ),
       drawer: DrawerNavigation(),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),

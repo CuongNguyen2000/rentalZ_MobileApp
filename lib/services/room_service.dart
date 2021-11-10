@@ -23,12 +23,13 @@ class RoomService {
   }
 
   // Update rooms by id
-  updateRoom(int id, String name, String descrption) async {
+  Future<int> updateRoom(int id, String name, String descrption) async {
     final data = {
       'name': name,
       'description': descrption,
+      'updated_at': DateTime.now().toString()
     };
-    return await _repository!.updateData('furnitures', data, id);
+    return await _repository!.updateData('rooms', data, id);
   }
 
   // Delete room by id

@@ -80,6 +80,66 @@ class _TodoScreenState extends State<TodoScreen> {
     _loadFurnitures();
   }
 
+  void _showConfirmDialog(BuildContext context) {
+    showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Are you sure you want to add this house?'),
+          // singleChileScroll is a custom ScrollBehavior widget.
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('House Name: ${_houseNameController.text}'),
+                Text('House Description: ${_houseDescriptionController.text}'),
+                Text('House Price: ${_housePriceController.text}'),
+                Text('House Address: ${_houseAddressController.text}'),
+                Text('House City: ${_houseCityController.text}'),
+                Text('House Reporter: ${_houseReporterController.text}'),
+                Text('Room: ${_selectedRoom}'),
+                Text('Bedroom: ${_selectedBedroom}'),
+                Text('Furniture: ${_selectedFurniture}'),
+              ],
+            ),
+          ),
+          // content: Text('Are you sure you want to add this house?'),
+
+          actions: <Widget>[
+            TextButton(
+              child: Text('Yes'),
+              onPressed: () async {
+                _house.reporter = _houseReporterController.text;
+                _house.name = _houseNameController.text;
+                _house.description = _houseDescriptionController.text;
+                _house.price = int.parse(_housePriceController.text);
+                _house.address = _houseAddressController.text;
+                _house.city = _houseCityController.text;
+                _house.bedroom_type = _selectedBedroom;
+                _house.furniture_type = _selectedFurniture;
+                _house.room_type = _selectedRoom;
+                _house.createdAt = DateTime.now().toString();
+                _house.updatedAt = DateTime.now().toString();
+                await _houseService.insertHouse(_house);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const HomeScreen(),
+                  ),
+                );
+              },
+            ),
+            TextButton(
+              child: const Text('No'),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // return a headings of the page
@@ -262,24 +322,8 @@ class _TodoScreenState extends State<TodoScreen> {
                         },
                       );
                     }
-                    _house.reporter = _houseReporterController.text;
-                    _house.name = _houseNameController.text;
-                    _house.description = _houseDescriptionController.text;
-                    _house.price = int.parse(_housePriceController.text);
-                    _house.address = _houseAddressController.text;
-                    _house.city = _houseCityController.text;
-                    _house.bedroom_type = _selectedBedroom;
-                    _house.furniture_type = _selectedFurniture;
-                    _house.room_type = _selectedRoom;
-                    _house.createdAt = DateTime.now().toString();
-                    _house.updatedAt = DateTime.now().toString();
-                    await _houseService.insertHouse(_house);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const HomeScreen(),
-                      ),
-                    );
+
+                    _showConfirmDialog(context);
                   },
                 ),
               ],

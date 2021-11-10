@@ -1,12 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:rental_z/helpers/drawer_navigation.dart';
 import 'package:rental_z/screens/todo_screen.dart';
-import 'package:rental_z/services/bedroom_service.dart';
 import 'package:rental_z/services/house_service.dart';
-import 'package:rental_z/services/room_service.dart';
-import 'package:rental_z/services/furniture_service.dart';
-import 'package:rental_z/screens/home.dart';
 import 'package:rental_z/models/house.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -30,12 +27,15 @@ class _HomeScreenState extends State<HomeScreen> {
         model.id = house['id'];
         model.name = house['name'];
         model.description = house['description'];
+        model.reporter = house['reporter'];
         model.price = house['price'];
         model.address = house['address'];
         model.city = house['city'];
         model.bedroom_type = house['bedroom_type'];
         model.furniture_type = house['furniture_type'];
         model.room_type = house['room_type'];
+        model.createdAt = house['created_at'];
+        model.updatedAt = house['updated_at'];
         _houseList!.add(model);
       });
     });
@@ -79,6 +79,14 @@ class _HomeScreenState extends State<HomeScreen> {
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
+                Text(
+                  'Reporter: ${house.reporter}',
+                  // text color and font bold
+                  style: TextStyle(
+                    color: Colors.red,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 Text('Name: ${house.name}'),
                 Text('Description: ${house.description}'),
                 Text('Price: ${house.price}'),
@@ -87,6 +95,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 Text('Bedroom Type: ${house.bedroom_type}'),
                 Text('Furniture Type: ${house.furniture_type}'),
                 Text('Room Type: ${house.room_type}'),
+
+                // date with formater
+                Text(
+                  'Created At: ${DateFormat('dd-MM-yyyy').format(DateTime.parse(house.createdAt!))}',
+                ),
               ],
             ),
           ),
