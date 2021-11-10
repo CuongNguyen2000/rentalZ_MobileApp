@@ -208,8 +208,16 @@ class _HomeScreenState extends State<HomeScreen> {
                           IconButton(
                             icon: const Icon(Icons.edit),
                             onPressed: () {
+                              // show form update
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => TodoScreen(
+                                    house: _findItem?[index].id,
+                                  ),
+                                ),
+                              );
                               // _showForm(_findItem?[index].id);
-                              print("edit");
                             },
                           ),
                           IconButton(

@@ -198,7 +198,13 @@ class _BedroomScreenState extends State<BedroomScreen> {
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text('Name: ${bedroom.name}'),
+                Text(
+                  'Name: ${bedroom.name}',
+                  style: TextStyle(
+                    color: Colors.red,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 Text('Description: ${bedroom.description}'),
                 Text(
                   'Created At: ${DateFormat('yyyy-MM-dd').format(DateTime.parse(bedroom.createdAt!))}',
@@ -281,7 +287,7 @@ class _BedroomScreenState extends State<BedroomScreen> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Text(
+            const Text(
               'Bedroom',
               style: TextStyle(
                 fontSize: 20,
@@ -289,13 +295,13 @@ class _BedroomScreenState extends State<BedroomScreen> {
               ),
             ),
             // Search bar
-            Container(
+            SizedBox(
               width: MediaQuery.of(context).size.width * 0.5,
               child: TextField(
                 onChanged: (text) {
                   _searchBedrooms(text);
                 },
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Search Bedroom',
                   border: InputBorder.none,
                   prefixIcon: Icon(Icons.search),

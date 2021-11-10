@@ -8,7 +8,7 @@ import 'package:rental_z/screens/home.dart';
 import 'package:rental_z/models/house.dart';
 
 class TodoScreen extends StatefulWidget {
-  const TodoScreen({Key? key}) : super(key: key);
+  const TodoScreen({Key? key, int? house}) : super(key: key);
 
   @override
   _TodoScreenState createState() => _TodoScreenState();

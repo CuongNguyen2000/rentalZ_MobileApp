@@ -177,7 +177,13 @@ class _RoomScreennState extends State<RoomScreen> {
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text('Name: ${room.name}'),
+                Text(
+                  'Name: ${room.name}',
+                  style: TextStyle(
+                    color: Colors.red,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 Text('Description: ${room.description}'),
                 Text(
                   'Created At: ${DateFormat('dd-MM-yyyy').format(DateTime.parse(room.createdAt!))}',
@@ -265,7 +271,7 @@ class _RoomScreennState extends State<RoomScreen> {
               ),
             ),
             // Search bar
-            Container(
+            SizedBox(
               width: MediaQuery.of(context).size.width * 0.5,
               child: TextField(
                 onChanged: (text) {

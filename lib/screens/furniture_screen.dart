@@ -180,7 +180,13 @@ class _FurnitureScreenState extends State<FurnitureScreen> {
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text('Furniture Name: ${furniture.name}'),
+                Text(
+                  'Furniture Name: ${furniture.name}',
+                  style: TextStyle(
+                    color: Colors.red,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 Text('Furniture Description: ${furniture.description}'),
                 Text(
                   'Created At: ${DateFormat('dd-MM-yyyy').format(DateTime.parse(furniture.createdAt!))}',
@@ -260,7 +266,7 @@ class _FurnitureScreenState extends State<FurnitureScreen> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Text(
+            const Text(
               'Furniture',
               style: TextStyle(
                 fontSize: 20,
@@ -268,13 +274,13 @@ class _FurnitureScreenState extends State<FurnitureScreen> {
               ),
             ),
             // Search bar
-            Container(
+            SizedBox(
               width: MediaQuery.of(context).size.width * 0.5,
               child: TextField(
                 onChanged: (text) {
                   _searchFurniture(text);
                 },
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Search furniture',
                   border: InputBorder.none,
                   prefixIcon: Icon(Icons.search),
