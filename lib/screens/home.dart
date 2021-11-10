@@ -26,11 +26,11 @@ class _HomeScreenState extends State<HomeScreen> {
         var model = House();
         model.id = house['id'];
         model.name = house['name'];
-        model.description = house['description'];
+        model.note = house['note'];
         model.reporter = house['reporter'];
+        model.note = house['note'];
         model.price = house['price'];
         model.address = house['address'];
-        model.city = house['city'];
         model.bedroom_type = house['bedroom_type'];
         model.furniture_type = house['furniture_type'];
         model.room_type = house['room_type'];
@@ -83,22 +83,26 @@ class _HomeScreenState extends State<HomeScreen> {
                   'Reporter: ${house.reporter}',
                   // text color and font bold
                   style: TextStyle(
-                    color: Colors.red,
+                    color: Colors.red[400],
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 Text('Name: ${house.name}'),
-                Text('Description: ${house.description}'),
-                Text('Price: ${house.price}'),
+                Text('Description: ${house.note}'),
+                Text('Price: ${house.price}/month'),
                 Text('Address: ${house.address}'),
-                Text('City: ${house.city}'),
                 Text('Bedroom Type: ${house.bedroom_type}'),
                 Text('Furniture Type: ${house.furniture_type}'),
                 Text('Room Type: ${house.room_type}'),
-
-                // date with formater
                 Text(
                   'Created At: ${DateFormat('dd-MM-yyyy').format(DateTime.parse(house.createdAt!))}',
+                ),
+                Text(
+                  'Note: ${house.note!.isEmpty ? 'NO NOTE' : house.note}',
+                  style: TextStyle(
+                    color: Colors.red[300],
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ],
             ),
@@ -140,10 +144,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 setState(() {
                   _houseService!.deleteHouse(id);
                   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    content: Text('House deleted'),
+                    content: Text('Successfully deleted a house!'),
                   ));
-                  // remove the deleted item from the list
-                  _findItem!.removeWhere((item) => item.id == id);
                   getAllHouses();
                   Navigator.pop(context);
                 });
@@ -163,7 +165,7 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Text(
+            const Text(
               'Home',
               style: TextStyle(
                 fontSize: 20,
@@ -177,7 +179,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 onChanged: (text) {
                   _searchHouse(text);
                 },
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Search Bedroom',
                   border: InputBorder.none,
                   prefixIcon: Icon(Icons.search),
@@ -190,7 +192,15 @@ class _HomeScreenState extends State<HomeScreen> {
       // show card message if no house found
       body: _houseList!.isEmpty
           ? Center(
-              child: Text('No house found'),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    'No House found',
+                    style: Theme.of(context).textTheme.headline4,
+                  ),
+                ],
+              ),
             )
           : ListView.builder(
               itemCount: _findItem?.length,
@@ -200,7 +210,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   margin: const EdgeInsets.all(15),
                   child: ListTile(
                     title: Text(_findItem?[index].name ?? ''),
-                    subtitle: Text(_findItem?[index].description ?? ''),
+                    subtitle: Text(_findItem?[index].note ?? ''),
                     trailing: SizedBox(
                       width: 100,
                       child: Row(

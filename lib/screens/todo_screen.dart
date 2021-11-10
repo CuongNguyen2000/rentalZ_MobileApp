@@ -16,10 +16,9 @@ class TodoScreen extends StatefulWidget {
 
 class _TodoScreenState extends State<TodoScreen> {
   final _houseNameController = TextEditingController();
-  final _houseDescriptionController = TextEditingController();
+  final _houseNoteController = TextEditingController();
   final _housePriceController = TextEditingController();
   final _houseAddressController = TextEditingController();
-  final _houseCityController = TextEditingController();
   final _houseReporterController = TextEditingController();
 
   final _houseService = HouseService();
@@ -32,6 +31,9 @@ class _TodoScreenState extends State<TodoScreen> {
   final _rooms = <DropdownMenuItem>[];
   final _bedrooms = <DropdownMenuItem>[];
   final _furnitures = <DropdownMenuItem>[];
+
+  // global formKey
+  final _formKey = GlobalKey<FormState>();
 
   _loadRooms() async {
     var _roomService = RoomService();
@@ -90,15 +92,27 @@ class _TodoScreenState extends State<TodoScreen> {
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
+                //text with color
+                Text(
+                  'House Reporter: ${_houseReporterController.text}',
+                  style: const TextStyle(color: Colors.red),
+                ),
                 Text('House Name: ${_houseNameController.text}'),
-                Text('House Description: ${_houseDescriptionController.text}'),
-                Text('House Price: ${_housePriceController.text}'),
+                Text('House Price: ${_housePriceController.text}/month'),
                 Text('House Address: ${_houseAddressController.text}'),
-                Text('House City: ${_houseCityController.text}'),
-                Text('House Reporter: ${_houseReporterController.text}'),
                 Text('Room: ${_selectedRoom}'),
                 Text('Bedroom: ${_selectedBedroom}'),
                 Text('Furniture: ${_selectedFurniture}'),
+                // check if note is empty then show text "NO NOTE" with color style
+                Text(
+                  'Note: ${_houseNoteController.text.isEmpty ? 'NO NOTE' : _houseNoteController.text}',
+                  style: TextStyle(
+                    color: Colors.red[300],
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+
+                // Text('Note: ${_houseNoteController.text}'),
               ],
             ),
           ),
@@ -106,14 +120,20 @@ class _TodoScreenState extends State<TodoScreen> {
 
           actions: <Widget>[
             TextButton(
+              child: const Text('No'),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            TextButton(
               child: Text('Yes'),
               onPressed: () async {
                 _house.reporter = _houseReporterController.text;
                 _house.name = _houseNameController.text;
-                _house.description = _houseDescriptionController.text;
+                _house.note = _houseNoteController.text;
                 _house.price = int.parse(_housePriceController.text);
                 _house.address = _houseAddressController.text;
-                _house.city = _houseCityController.text;
+                _house.note = _houseNoteController.text;
                 _house.bedroom_type = _selectedBedroom;
                 _house.furniture_type = _selectedFurniture;
                 _house.room_type = _selectedRoom;
@@ -126,12 +146,6 @@ class _TodoScreenState extends State<TodoScreen> {
                     builder: (context) => const HomeScreen(),
                   ),
                 );
-              },
-            ),
-            TextButton(
-              child: const Text('No'),
-              onPressed: () {
-                Navigator.pop(context);
               },
             ),
           ],
@@ -159,10 +173,10 @@ class _TodoScreenState extends State<TodoScreen> {
                 TextFormField(
                   controller: _houseReporterController,
                   decoration: const InputDecoration(
-                    labelText: 'Name Reporter',
+                    labelText: 'Name Reporter *',
                   ),
                   validator: (value) {
-                    if (value!.isEmpty) {
+                    if (value == null || value.isEmpty) {
                       return 'Please enter a name reporter';
                     }
                     return null;
@@ -172,24 +186,11 @@ class _TodoScreenState extends State<TodoScreen> {
                 TextFormField(
                   controller: _houseNameController,
                   decoration: const InputDecoration(
-                    labelText: 'House Name',
+                    labelText: 'House Name *',
                   ),
                   validator: (value) {
-                    if (value!.isEmpty) {
+                    if (value == null || value.isEmpty) {
                       return 'Please enter a name';
-                    }
-                    return null;
-                  },
-                ),
-                // return a text form field to enter the description of the house with validation of the input field
-                TextFormField(
-                  controller: _houseDescriptionController,
-                  decoration: const InputDecoration(
-                    labelText: 'House Description',
-                  ),
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Please enter a description';
                     }
                     return null;
                   },
@@ -198,10 +199,10 @@ class _TodoScreenState extends State<TodoScreen> {
                 TextFormField(
                   controller: _housePriceController,
                   decoration: const InputDecoration(
-                    labelText: 'House Price',
+                    labelText: 'House Price *',
                   ),
                   validator: (value) {
-                    if (value!.isEmpty) {
+                    if (value == null || value.isEmpty) {
                       return 'Please enter a price';
                     }
                     return null;
@@ -211,24 +212,11 @@ class _TodoScreenState extends State<TodoScreen> {
                 TextFormField(
                   controller: _houseAddressController,
                   decoration: const InputDecoration(
-                    labelText: 'House Address',
+                    labelText: 'House Address *',
                   ),
                   validator: (value) {
-                    if (value!.isEmpty) {
+                    if (value == null || value.isEmpty) {
                       return 'Please enter an address';
-                    }
-                    return null;
-                  },
-                ),
-                // return a text form field to enter the city of the house with validation of the input field
-                TextFormField(
-                  controller: _houseCityController,
-                  decoration: const InputDecoration(
-                    labelText: 'House City',
-                  ),
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Please enter a city';
                     }
                     return null;
                   },
@@ -243,8 +231,14 @@ class _TodoScreenState extends State<TodoScreen> {
                     });
                   },
                   decoration: const InputDecoration(
-                    labelText: 'Select Room',
+                    labelText: 'Select Room *',
                   ),
+                  validator: (value) {
+                    if (value == null) {
+                      return 'Please select a room';
+                    }
+                    return null;
+                  },
                 ),
                 // return a dropdown menu to select the bedroom of the house
                 DropdownButtonFormField<dynamic>(
@@ -256,8 +250,14 @@ class _TodoScreenState extends State<TodoScreen> {
                     });
                   },
                   decoration: const InputDecoration(
-                    labelText: 'Select Bedroom',
+                    labelText: 'Select Bedroom *',
                   ),
+                  validator: (value) {
+                    if (value == null) {
+                      return 'Please select a bedroom';
+                    }
+                    return null;
+                  },
                 ),
                 // return a dropdown menu to select the furniture of the house
                 DropdownButtonFormField<dynamic>(
@@ -269,19 +269,38 @@ class _TodoScreenState extends State<TodoScreen> {
                     });
                   },
                   decoration: const InputDecoration(
-                    labelText: 'Select Furniture',
+                    labelText: 'Select Furniture *',
+                  ),
+                  validator: (value) {
+                    if (value == null) {
+                      return 'Please select a furniture';
+                    }
+                    return null;
+                  },
+                ),
+                // return a card with color with text form field to enter the note of the house
+                Card(
+                  color: Colors.orange[200],
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: TextFormField(
+                      controller: _houseNoteController,
+                      decoration: const InputDecoration(
+                        labelText: 'Note',
+                      ),
+                      maxLines: 3,
+                    ),
                   ),
                 ),
-                // return a button to add the house and check validation of the input fields and check if price is not a number and navigate to the home page
+
+                // return a orange button to add the house and check validation of the input fields and check if price is not a number and navigate to the home page
                 ElevatedButton(
-                  child: const Text('Add House'),
+                  child: Text('Add House'),
                   onPressed: () async {
                     if (_houseNameController.text.isEmpty ||
                         _houseReporterController.text.isEmpty ||
-                        _houseDescriptionController.text.isEmpty ||
                         _housePriceController.text.isEmpty ||
                         _houseAddressController.text.isEmpty ||
-                        _houseCityController.text.isEmpty ||
                         _selectedRoom == null ||
                         _selectedBedroom == null ||
                         _selectedFurniture == null) {

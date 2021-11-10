@@ -2,9 +2,7 @@ class House {
   int? id;
   String? name;
   String? address;
-  String? city;
-  // String? image;
-  String? description;
+  String? note;
   int? price;
   String? reporter;
   String? room_type;
@@ -19,9 +17,7 @@ class House {
     mapping['id'] = id;
     mapping['name'] = name;
     mapping['address'] = address;
-    mapping['city'] = city;
-    // mapping['image'] = image;
-    mapping['description'] = description;
+    mapping['note'] = note;
     mapping['price'] = price;
     mapping['reporter'] = reporter;
     mapping['room_type'] = room_type;

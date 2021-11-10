@@ -26,8 +26,6 @@ class _FurnitureScreenState extends State<FurnitureScreen> {
   List<Furniture> _FurnitureList = [];
   List<Furniture>? _findItems;
 
-  bool _isLoading = true;
-
   getAllFurnitures() async {
     _FurnitureList = [];
     var furnitures = await _furnitureService.getAllFurnitures();
@@ -41,7 +39,6 @@ class _FurnitureScreenState extends State<FurnitureScreen> {
         furnitureModel.updatedAt = bedroom['updated_at'];
         _FurnitureList.add(furnitureModel);
         _findItems = _FurnitureList;
-        _isLoading = false;
       });
     });
     // ignore: avoid_print
@@ -291,7 +288,7 @@ class _FurnitureScreenState extends State<FurnitureScreen> {
         ),
       ),
       // show card message if no bedroom found
-      body: _isLoading
+      body: _FurnitureList.isEmpty
           ? Center(
               // child: CircularProgressIndicator(),
               child: Column(

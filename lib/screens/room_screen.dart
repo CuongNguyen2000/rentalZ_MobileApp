@@ -25,8 +25,6 @@ class _RoomScreennState extends State<RoomScreen> {
   List<Room> _RoomList = [];
   List<Room>? _findItems;
 
-  bool _isLoading = true;
-
   getAllRooms() async {
     _RoomList = [];
     var rooms = await _roomService.getAllRooms();
@@ -40,7 +38,6 @@ class _RoomScreennState extends State<RoomScreen> {
         roomModel.updatedAt = bedroom['updated_at'];
         _RoomList.add(roomModel);
         _findItems = _RoomList;
-        _isLoading = false;
       });
     });
     // ignore: avoid_print
@@ -288,7 +285,7 @@ class _RoomScreennState extends State<RoomScreen> {
         ),
       ),
       // show card message if no bedroom found
-      body: _isLoading
+      body: _RoomList.isEmpty
           ? Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
