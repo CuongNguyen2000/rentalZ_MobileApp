@@ -262,33 +262,37 @@ class _HomeScreenState extends State<HomeScreen> {
                   controller: _houseReporterController,
                   decoration: InputDecoration(
                     labelText: 'Reporter',
-                    hintText: 'Reporter',
+                    hintText: 'Enter name of reporter',
                   ),
                 ),
                 TextFormField(
                   controller: _houseNameController,
                   decoration: InputDecoration(
                     labelText: 'Name',
-                    hintText: 'Name',
+                    hintText: 'Enter name of house',
                   ),
                 ),
                 TextFormField(
                   controller: _housePriceController,
                   decoration: InputDecoration(
                     labelText: 'Price',
-                    hintText: 'Price',
+                    hintText: 'Enter price of house',
                   ),
                 ),
                 TextFormField(
                   controller: _houseAddressController,
                   decoration: InputDecoration(
                     labelText: 'Address',
-                    hintText: 'Address',
+                    hintText: 'Enter address of house',
                   ),
                 ),
                 DropdownButtonFormField<dynamic>(
                   value: _selectedBedroom,
                   items: _bedrooms,
+                  decoration: InputDecoration(
+                    labelText: 'Select Bedroom',
+                    hintText: 'Select bedroom type',
+                  ),
                   onChanged: (newValue) {
                     setState(() {
                       _selectedBedroom = newValue;
@@ -298,6 +302,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 DropdownButtonFormField<dynamic>(
                   value: _selectedFurniture,
                   items: _furnitures,
+                  decoration: InputDecoration(
+                    labelText: 'Select Furniture',
+                    hintText: 'Select furniture type',
+                  ),
                   onChanged: (newValue) {
                     setState(() {
                       _selectedFurniture = newValue;
@@ -307,6 +315,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 DropdownButtonFormField<dynamic>(
                   value: _selectedRoom,
                   items: _rooms,
+                  decoration: InputDecoration(
+                    labelText: 'Select Room',
+                    hintText: 'Select room type',
+                  ),
                   onChanged: (newValue) {
                     setState(() {
                       _selectedRoom = newValue;
@@ -321,6 +333,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       controller: _houseNoteController,
                       decoration: const InputDecoration(
                         labelText: 'Note',
+                        hintText: 'Enter note of house',
                       ),
                       maxLines: 3,
                     ),
@@ -410,47 +423,52 @@ class _HomeScreenState extends State<HomeScreen> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
-
-                  child: Column(
-                    children: <Widget>[
-                      ListTile(
-                        title: Text(house.name!),
-                        subtitle: Text(
-                          '\$ ${house.price!.toString()} / month',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
+                  // tap to view details of house
+                  child: InkWell(
+                    onTap: () {
+                      _showDetails(house.id);
+                    },
+                    child: Column(
+                      children: <Widget>[
+                        ListTile(
+                          title: Text('Name: ${house.name!}'),
+                          subtitle: Text(
+                            '\$ ${house.price!.toString()} / month',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                            ),
                           ),
                         ),
-                      ),
-                      ListTile(
-                        title: Text(house.address!),
-                        subtitle: Text(
-                          'Reporter: ${house.reporter!}',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
+                        ListTile(
+                          title: Text('Address: ${house.address!}'),
+                          subtitle: Text(
+                            'Reporter: ${house.reporter!}',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                            ),
                           ),
                         ),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: <Widget>[
-                          ElevatedButton(
-                            child: const Text('Update'),
-                            onPressed: () {
-                              _showUpdateForm(house.id);
-                            },
-                          ),
-                          ElevatedButton(
-                            child: const Text('Delete'),
-                            onPressed: () {
-                              _showDeleteMessage(house.id);
-                            },
-                          ),
-                        ],
-                      ),
-                    ],
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: <Widget>[
+                            ElevatedButton(
+                              child: const Text('Update'),
+                              onPressed: () {
+                                _showUpdateForm(house.id);
+                              },
+                            ),
+                            ElevatedButton(
+                              child: const Text('Delete'),
+                              onPressed: () {
+                                _showDeleteMessage(house.id);
+                              },
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 );
               }).toList(),

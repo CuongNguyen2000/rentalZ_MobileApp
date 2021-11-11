@@ -180,6 +180,7 @@ class _TodoScreenState extends State<TodoScreen> {
                   controller: _houseReporterController,
                   decoration: const InputDecoration(
                     labelText: 'Name Reporter *',
+                    hintText: 'Enter the name of reporter',
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -193,6 +194,7 @@ class _TodoScreenState extends State<TodoScreen> {
                   controller: _houseNameController,
                   decoration: const InputDecoration(
                     labelText: 'House Name *',
+                    hintText: 'Enter the name of house',
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -206,6 +208,7 @@ class _TodoScreenState extends State<TodoScreen> {
                   controller: _housePriceController,
                   decoration: const InputDecoration(
                     labelText: 'House Price *',
+                    hintText: 'Enter the price of house',
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -222,6 +225,7 @@ class _TodoScreenState extends State<TodoScreen> {
                   controller: _houseAddressController,
                   decoration: const InputDecoration(
                     labelText: 'House Address *',
+                    hintText: 'Enter the address of house',
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -241,6 +245,7 @@ class _TodoScreenState extends State<TodoScreen> {
                   },
                   decoration: const InputDecoration(
                     labelText: 'Select Room *',
+                    hintText: 'Select the room of house',
                   ),
                   validator: (value) {
                     if (value == null) {
@@ -260,6 +265,7 @@ class _TodoScreenState extends State<TodoScreen> {
                   },
                   decoration: const InputDecoration(
                     labelText: 'Select Bedroom *',
+                    hintText: 'Select the bedroom of house',
                   ),
                   validator: (value) {
                     if (value == null) {
@@ -279,6 +285,7 @@ class _TodoScreenState extends State<TodoScreen> {
                   },
                   decoration: const InputDecoration(
                     labelText: 'Select Furniture *',
+                    hintText: 'Select the furniture of house',
                   ),
                   validator: (value) {
                     if (value == null) {
@@ -296,6 +303,7 @@ class _TodoScreenState extends State<TodoScreen> {
                       controller: _houseNoteController,
                       decoration: const InputDecoration(
                         labelText: 'Note',
+                        hintText: 'Enter some note',
                       ),
                       maxLines: 3,
                     ),
