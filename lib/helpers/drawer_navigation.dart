@@ -23,6 +23,7 @@ class _DrawerNavigationState extends State<DrawerNavigation> {
             UserAccountsDrawerHeader(
               currentAccountPicture: CircleAvatar(
                 backgroundColor: Colors.white,
+                // backgroundImage: AssetImage('assets/images/avt.jpg'),
                 child: Icon(
                   Icons.person,
                   color: Colors.black,

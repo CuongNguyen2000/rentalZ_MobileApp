@@ -163,6 +163,9 @@ class _BedroomScreenState extends State<BedroomScreen> {
 
                 if (id != null) {
                   await _updateBedroom(id);
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text('Successfully updated a bedroom!'),
+                  ));
                 }
 
                 // Clear the text fields

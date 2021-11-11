@@ -8,7 +8,7 @@ import 'package:rental_z/screens/home.dart';
 import 'package:rental_z/models/house.dart';
 
 class TodoScreen extends StatefulWidget {
-  const TodoScreen({Key? key, int? house}) : super(key: key);
+  const TodoScreen({Key? key}) : super(key: key);
 
   @override
   _TodoScreenState createState() => _TodoScreenState();
@@ -103,7 +103,6 @@ class _TodoScreenState extends State<TodoScreen> {
                 Text('Room: ${_selectedRoom}'),
                 Text('Bedroom: ${_selectedBedroom}'),
                 Text('Furniture: ${_selectedFurniture}'),
-                // check if note is empty then show text "NO NOTE" with color style
                 Text(
                   'Note: ${_houseNoteController.text.isEmpty ? 'NO NOTE' : _houseNoteController.text}',
                   style: TextStyle(
@@ -154,9 +153,15 @@ class _TodoScreenState extends State<TodoScreen> {
     );
   }
 
+  bool isNumeric(String value) {
+    if (value == null) {
+      return false;
+    }
+    return int.tryParse(value) != null;
+  }
+
   @override
   Widget build(BuildContext context) {
-    // return a headings of the page
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.orange,
@@ -164,7 +169,8 @@ class _TodoScreenState extends State<TodoScreen> {
       ),
       // return card to add house, avoid overflow of the page
       body: SingleChildScrollView(
-        child: Card(
+        child: Form(
+          key: _formKey,
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -204,6 +210,9 @@ class _TodoScreenState extends State<TodoScreen> {
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter a price';
+                    }
+                    if (!isNumeric(value)) {
+                      return 'Price must be a number';
                     }
                     return null;
                   },
@@ -297,54 +306,82 @@ class _TodoScreenState extends State<TodoScreen> {
                 ElevatedButton(
                   child: Text('Add House'),
                   onPressed: () async {
-                    if (_houseNameController.text.isEmpty ||
-                        _houseReporterController.text.isEmpty ||
-                        _housePriceController.text.isEmpty ||
-                        _houseAddressController.text.isEmpty ||
-                        _selectedRoom == null ||
-                        _selectedBedroom == null ||
-                        _selectedFurniture == null) {
-                      return showDialog(
-                        context: context,
-                        builder: (context) {
-                          return AlertDialog(
-                            title: const Text('Error'),
-                            content: const Text('Please fill all the fields'),
-                            actions: <Widget>[
-                              TextButton(
-                                child: const Text('Ok'),
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                              ),
-                            ],
-                          );
-                        },
-                      );
+                    if (_formKey.currentState!.validate()) {
+                      if (!isNumeric(_housePriceController.text)) {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text('Error'),
+                              content: Text('Price must be a number'),
+                              actions: <Widget>[
+                                TextButton(
+                                  child: Text('Ok'),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      } else {
+                        _showConfirmDialog(context);
+                      }
                     }
-                    if (int.tryParse(_housePriceController.text) == null) {
-                      return showDialog(
-                        context: context,
-                        builder: (context) {
-                          return AlertDialog(
-                            title: const Text('Error'),
-                            content: const Text('Please enter a valid price'),
-                            actions: <Widget>[
-                              TextButton(
-                                child: const Text('Ok'),
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    }
-
-                    _showConfirmDialog(context);
                   },
                 ),
+                // ElevatedButton(
+                //   child: Text('Add House'),
+                //   onPressed: () async {
+                //     if (_houseNameController.text.isEmpty ||
+                //         _houseReporterController.text.isEmpty ||
+                //         _housePriceController.text.isEmpty ||
+                //         _houseAddressController.text.isEmpty ||
+                //         _selectedRoom == null ||
+                //         _selectedBedroom == null ||
+                //         _selectedFurniture == null) {
+                //       return showDialog(
+                //         context: context,
+                //         builder: (context) {
+                //           return AlertDialog(
+                //             title: const Text('Error'),
+                //             content: const Text('Please fill all the fields'),
+                //             actions: <Widget>[
+                //               TextButton(
+                //                 child: const Text('Ok'),
+                //                 onPressed: () {
+                //                   Navigator.of(context).pop();
+                //                 },
+                //               ),
+                //             ],
+                //           );
+                //         },
+                //       );
+                //     }
+                //     if (int.tryParse(_housePriceController.text) == null) {
+                //       return showDialog(
+                //         context: context,
+                //         builder: (context) {
+                //           return AlertDialog(
+                //             title: const Text('Error'),
+                //             content: const Text('Please enter a valid price'),
+                //             actions: <Widget>[
+                //               TextButton(
+                //                 child: const Text('Ok'),
+                //                 onPressed: () {
+                //                   Navigator.of(context).pop();
+                //                 },
+                //               ),
+                //             ],
+                //           );
+                //         },
+                //       );
+                //     }
+
+                //     _showConfirmDialog(context);
+                //   },
+                // ),
               ],
             ),
           ),
@@ -352,4 +389,5 @@ class _TodoScreenState extends State<TodoScreen> {
       ),
     );
   }
+
 }

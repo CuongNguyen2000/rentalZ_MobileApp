@@ -144,6 +144,9 @@ class _RoomScreennState extends State<RoomScreen> {
 
                 if (id != null) {
                   await _updateRoom(id);
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text('Successfully updated a room!'),
+                  ));
                 }
 
                 // Clear the text fields

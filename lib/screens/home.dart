@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:rental_z/helpers/drawer_navigation.dart';
 import 'package:rental_z/screens/todo_screen.dart';
+import 'package:rental_z/services/bedroom_service.dart';
+import 'package:rental_z/services/furniture_service.dart';
 import 'package:rental_z/services/house_service.dart';
 import 'package:rental_z/models/house.dart';
+import 'package:rental_z/services/room_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -14,6 +17,63 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final TextEditingController _houseNameController = TextEditingController();
+  final TextEditingController _houseNoteController = TextEditingController();
+  final TextEditingController _housePriceController = TextEditingController();
+  final TextEditingController _houseAddressController = TextEditingController();
+  final TextEditingController _houseReporterController =
+      TextEditingController();
+
+  var _selectedRoom;
+  var _selectedBedroom;
+  var _selectedFurniture;
+
+  final _rooms = <DropdownMenuItem>[];
+  final _bedrooms = <DropdownMenuItem>[];
+  final _furnitures = <DropdownMenuItem>[];
+
+  // global formKey
+  final _formKey = GlobalKey<FormState>();
+
+  _loadRooms() async {
+    var _roomService = RoomService();
+    var rooms = await _roomService.getAllRooms();
+    rooms.forEach((room) {
+      setState(() {
+        _rooms.add(DropdownMenuItem(
+          child: Text(room['name']),
+          value: room['name'],
+        ));
+      });
+    });
+  }
+
+  _loadBedrooms() async {
+    var _bedroomService = BedroomService();
+    var bedrooms = await _bedroomService.getAllBedrooms();
+    bedrooms.forEach((bedroom) {
+      setState(() {
+        _bedrooms.add(DropdownMenuItem(
+          child: Text(bedroom['name']),
+          value: bedroom['name'],
+        ));
+      });
+    });
+  }
+
+  _loadFurnitures() async {
+    var _furnitureService = FurnitureService();
+    var furnitures = await _furnitureService.getAllFurnitures();
+    furnitures.forEach((furniture) {
+      setState(() {
+        _furnitures.add(DropdownMenuItem(
+          child: Text(furniture['name']),
+          value: furniture['name'],
+        ));
+      });
+    });
+  }
+
   HouseService? _houseService;
   List<House>? _houseList;
 
@@ -47,6 +107,9 @@ class _HomeScreenState extends State<HomeScreen> {
   initState() {
     super.initState();
     getAllHouses();
+    _loadRooms();
+    _loadBedrooms();
+    _loadFurnitures();
     _findItem = _houseList;
   }
 
@@ -157,6 +220,141 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Future<void> _updateHouse(int id) async {
+    await _houseService!.updateHouse(
+      id,
+      _houseNameController.text,
+      _houseAddressController.text,
+      _houseReporterController.text,
+      int.parse(_housePriceController.text),
+      _houseNoteController.text,
+      _selectedRoom,
+      _selectedBedroom,
+      _selectedFurniture,
+    );
+  }
+
+  // this form is use to update the house information by id
+  void _showUpdateForm(int? id) {
+    if (id == null) {
+      return;
+    }
+    var house = _findItem!.firstWhere((house) => house.id == id);
+    // assign values controller to the form fields  and set the value of the fields
+    _houseReporterController.text = house.reporter!;
+    _houseNameController.text = house.name!;
+    _houseNoteController.text = house.note!;
+    _housePriceController.text = house.price!.toString();
+    _houseAddressController.text = house.address!;
+    _selectedBedroom = house.bedroom_type;
+    _selectedFurniture = house.furniture_type;
+    _selectedRoom = house.room_type;
+
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Update House'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                TextFormField(
+                  controller: _houseReporterController,
+                  decoration: InputDecoration(
+                    labelText: 'Reporter',
+                    hintText: 'Reporter',
+                  ),
+                ),
+                TextFormField(
+                  controller: _houseNameController,
+                  decoration: InputDecoration(
+                    labelText: 'Name',
+                    hintText: 'Name',
+                  ),
+                ),
+                TextFormField(
+                  controller: _housePriceController,
+                  decoration: InputDecoration(
+                    labelText: 'Price',
+                    hintText: 'Price',
+                  ),
+                ),
+                TextFormField(
+                  controller: _houseAddressController,
+                  decoration: InputDecoration(
+                    labelText: 'Address',
+                    hintText: 'Address',
+                  ),
+                ),
+                DropdownButtonFormField<dynamic>(
+                  value: _selectedBedroom,
+                  items: _bedrooms,
+                  onChanged: (newValue) {
+                    setState(() {
+                      _selectedBedroom = newValue;
+                    });
+                  },
+                ),
+                DropdownButtonFormField<dynamic>(
+                  value: _selectedFurniture,
+                  items: _furnitures,
+                  onChanged: (newValue) {
+                    setState(() {
+                      _selectedFurniture = newValue;
+                    });
+                  },
+                ),
+                DropdownButtonFormField<dynamic>(
+                  value: _selectedRoom,
+                  items: _rooms,
+                  onChanged: (newValue) {
+                    setState(() {
+                      _selectedRoom = newValue;
+                    });
+                  },
+                ),
+                Card(
+                  color: Colors.orange[200],
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: TextFormField(
+                      controller: _houseNoteController,
+                      decoration: const InputDecoration(
+                        labelText: 'Note',
+                      ),
+                      maxLines: 3,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            TextButton(
+              child: const Text('Update'),
+              onPressed: () {
+                setState(() {
+                  _updateHouse(id);
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text('Successfully updated a house!'),
+                  ));
+                  getAllHouses();
+                  Navigator.pop(context);
+                });
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -202,49 +400,60 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             )
-          : ListView.builder(
-              itemCount: _findItem?.length,
-              itemBuilder: (context, index) {
+          // Show list of house into grid view
+          : GridView.count(
+              crossAxisCount: 2,
+              children: _findItem!.map((house) {
                 return Card(
                   color: Colors.orange[200],
-                  margin: const EdgeInsets.all(15),
-                  child: ListTile(
-                    title: Text(_findItem?[index].name ?? ''),
-                    subtitle: Text(_findItem?[index].note ?? ''),
-                    trailing: SizedBox(
-                      width: 100,
-                      child: Row(
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.edit),
+                  // border radius is 10
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+
+                  child: Column(
+                    children: <Widget>[
+                      ListTile(
+                        title: Text(house.name!),
+                        subtitle: Text(
+                          '\$ ${house.price!.toString()} / month',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                          ),
+                        ),
+                      ),
+                      ListTile(
+                        title: Text(house.address!),
+                        subtitle: Text(
+                          'Reporter: ${house.reporter!}',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                          ),
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: <Widget>[
+                          ElevatedButton(
+                            child: const Text('Update'),
                             onPressed: () {
-                              // show form update
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => TodoScreen(
-                                    house: _findItem?[index].id,
-                                  ),
-                                ),
-                              );
-                              // _showForm(_findItem?[index].id);
+                              _showUpdateForm(house.id);
                             },
                           ),
-                          IconButton(
-                            icon: const Icon(Icons.delete),
+                          ElevatedButton(
+                            child: const Text('Delete'),
                             onPressed: () {
-                              _showDeleteMessage(_findItem?[index].id);
+                              _showDeleteMessage(house.id);
                             },
                           ),
                         ],
                       ),
-                    ),
-                    onTap: () {
-                      _showDetails(_findItem?[index].id);
-                    },
+                    ],
                   ),
                 );
-              },
+              }).toList(),
             ),
       drawer: DrawerNavigation(),
       floatingActionButton: FloatingActionButton(

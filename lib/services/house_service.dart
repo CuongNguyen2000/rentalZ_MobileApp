@@ -23,8 +23,28 @@ class HouseService {
   }
 
   // Update house by id
-  updateHouse(House house) async {
-    return await _repository!.updateData('houses', house.id, house.HouseMap());
+  Future<int> updateHouse(
+      int id,
+      String name,
+      String address,
+      String reporter,
+      int price,
+      String? note,
+      String room_type,
+      String bedroom_type,
+      String furniture_type) async {
+    final data = {
+      'name': name,
+      'address': address,
+      'reporter': reporter,
+      'price': price,
+      'note': note,
+      'room_type': room_type,
+      'bedroom_type': bedroom_type,
+      'furniture_type': furniture_type,
+      'updated_at': DateTime.now().toString()
+    };
+    return await _repository!.updateData('houses', data, id);
   }
 
   // Delete house by id

@@ -147,6 +147,9 @@ class _FurnitureScreenState extends State<FurnitureScreen> {
 
                   if (id != null) {
                     await _updateFurniture(id);
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text('Successfully updated a furniture!'),
+                    ));
                   }
 
                   // Clear the text fields
