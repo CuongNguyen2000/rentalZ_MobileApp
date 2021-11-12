@@ -158,6 +158,7 @@ class _BedroomScreenState extends State<BedroomScreen> {
                         },
                       );
                     }
+                    Navigator.pop(context);
                   }
                 }
 
@@ -166,14 +167,13 @@ class _BedroomScreenState extends State<BedroomScreen> {
                   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                     content: Text('Successfully updated a bedroom!'),
                   ));
+                  Navigator.pop(context);
                 }
 
                 // Clear the text fields
                 _bedroomNameController.text = '';
                 _bedroomDescriptionController.text = '';
 
-                // Close the dialog
-                Navigator.pop(context);
                 getAllBedrooms();
               },
             ),
@@ -207,6 +207,9 @@ class _BedroomScreenState extends State<BedroomScreen> {
                 Text('Description: ${bedroom.description}'),
                 Text(
                   'Created At: ${DateFormat('yyyy-MM-dd').format(DateTime.parse(bedroom.createdAt!))}',
+                ),
+                Text(
+                  'Last modified at: ${DateFormat('dd-MM-yyyy HH:mm').format(DateTime.parse(bedroom.updatedAt!))}',
                 ),
               ],
             ),

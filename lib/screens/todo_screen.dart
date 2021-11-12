@@ -284,15 +284,9 @@ class _TodoScreenState extends State<TodoScreen> {
                     });
                   },
                   decoration: const InputDecoration(
-                    labelText: 'Select Furniture *',
+                    labelText: 'Select Furniture',
                     hintText: 'Select the furniture of house',
                   ),
-                  validator: (value) {
-                    if (value == null) {
-                      return 'Please select a furniture';
-                    }
-                    return null;
-                  },
                 ),
                 // return a card with color with text form field to enter the note of the house
                 Card(
@@ -315,6 +309,9 @@ class _TodoScreenState extends State<TodoScreen> {
                   child: Text('Add House'),
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Processing Data')),
+                      );
                       if (!isNumeric(_housePriceController.text)) {
                         showDialog(
                           context: context,
@@ -397,5 +394,4 @@ class _TodoScreenState extends State<TodoScreen> {
       ),
     );
   }
-
 }

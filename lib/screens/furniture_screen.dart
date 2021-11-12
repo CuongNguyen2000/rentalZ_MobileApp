@@ -142,6 +142,7 @@ class _FurnitureScreenState extends State<FurnitureScreen> {
                       _furniture.createdAt = DateTime.now().toString();
                       _furniture.updatedAt = DateTime.now().toString();
                       await _furnitureService.insertFurniture(_furniture);
+                      Navigator.pop(context);
                     }
                   }
 
@@ -150,13 +151,13 @@ class _FurnitureScreenState extends State<FurnitureScreen> {
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                       content: Text('Successfully updated a furniture!'),
                     ));
+                    Navigator.pop(context);
                   }
 
                   // Clear the text fields
                   _furnitureNameController.text = '';
                   _furnitureDescriptionController.text = '';
 
-                  Navigator.pop(context);
                   getAllFurnitures();
                 },
               ),
@@ -190,6 +191,9 @@ class _FurnitureScreenState extends State<FurnitureScreen> {
                 Text('Furniture Description: ${furniture.description}'),
                 Text(
                   'Created At: ${DateFormat('dd-MM-yyyy').format(DateTime.parse(furniture.createdAt!))}',
+                ),
+                Text(
+                  'Last modified at: ${DateFormat('dd-MM-yyyy HH:mm').format(DateTime.parse(furniture.updatedAt!))}',
                 ),
               ],
             ),
@@ -235,6 +239,7 @@ class _FurnitureScreenState extends State<FurnitureScreen> {
                   ));
                   getAllFurnitures();
                   Navigator.pop(context);
+                  _FurnitureList.removeWhere((furniture) => furniture.id == id);
                 });
               },
             ),

@@ -158,7 +158,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 Text('Furniture Type: ${house.furniture_type}'),
                 Text('Room Type: ${house.room_type}'),
                 Text(
-                  'Created At: ${DateFormat('dd-MM-yyyy').format(DateTime.parse(house.createdAt!))}',
+                  'Created at: ${DateFormat('dd-MM-yyyy').format(DateTime.parse(house.createdAt!))}',
+                ),
+                Text(
+                  'Last modified at: ${DateFormat('dd-MM-yyyy HH:mm').format(DateTime.parse(house.updatedAt!))}',
                 ),
                 Text(
                   'Note: ${house.note!.isEmpty ? 'NO NOTE' : house.note}',
@@ -209,6 +212,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                     content: Text('Successfully deleted a house!'),
                   ));
+                  _findItem!.removeWhere((item) => item.id == id);
                   getAllHouses();
                   Navigator.pop(context);
                 });
@@ -401,7 +405,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       // show card message if no house found
-      body: _houseList!.isEmpty
+      body: _findItem!.isEmpty
           ? Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,

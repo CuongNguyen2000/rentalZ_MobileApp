@@ -139,6 +139,7 @@ class _RoomScreennState extends State<RoomScreen> {
                     _room.createdAt = DateTime.now().toString();
                     _room.updatedAt = DateTime.now().toString();
                     await _roomService.insertRoom(_room);
+                    Navigator.pop(context);
                   }
                 }
 
@@ -147,13 +148,13 @@ class _RoomScreennState extends State<RoomScreen> {
                   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                     content: Text('Successfully updated a room!'),
                   ));
+                  Navigator.pop(context);
                 }
 
                 // Clear the text fields
                 _roomNameController.text = '';
                 _roomDescriptionController.text = '';
 
-                Navigator.pop(context);
                 getAllRooms();
               },
             ),
@@ -187,6 +188,9 @@ class _RoomScreennState extends State<RoomScreen> {
                 Text('Description: ${room.description}'),
                 Text(
                   'Created At: ${DateFormat('dd-MM-yyyy').format(DateTime.parse(room.createdAt!))}',
+                ),
+                Text(
+                  'Last modified at: ${DateFormat('dd-MM-yyyy HH:mm').format(DateTime.parse(room.updatedAt!))}',
                 ),
               ],
             ),
@@ -232,6 +236,7 @@ class _RoomScreennState extends State<RoomScreen> {
                   ));
                   getAllRooms();
                   Navigator.pop(context);
+                  _RoomList.removeWhere((room) => room.id == id);
                 });
               },
             ),
