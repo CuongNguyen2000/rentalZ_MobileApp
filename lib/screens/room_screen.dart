@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 import 'package:intl/intl.dart';
 import 'package:rental_z/helpers/drawer_navigation.dart';
 import 'package:rental_z/models/room.dart';
@@ -234,9 +235,10 @@ class _RoomScreennState extends State<RoomScreen> {
                   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                     content: Text('Successfully deleted a room!'),
                   ));
+                  _RoomList.removeWhere((room) => room.id == id);
                   getAllRooms();
                   Navigator.pop(context);
-                  _RoomList.removeWhere((room) => room.id == id);
+                  FlutterRingtonePlayer.playNotification();
                 });
               },
             ),

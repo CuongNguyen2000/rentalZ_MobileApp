@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 import 'package:intl/intl.dart';
 import 'package:rental_z/helpers/drawer_navigation.dart';
 import 'package:rental_z/screens/todo_screen.dart';
@@ -215,6 +216,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   _findItem!.removeWhere((item) => item.id == id);
                   getAllHouses();
                   Navigator.pop(context);
+                  FlutterRingtonePlayer.playNotification();
                 });
               },
             ),

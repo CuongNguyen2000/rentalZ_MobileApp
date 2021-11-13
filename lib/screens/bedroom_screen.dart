@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:rental_z/helpers/drawer_navigation.dart';
 import 'package:rental_z/models/bedroom.dart';
 import 'package:rental_z/services/bedroom_service.dart';
+import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 
 class BedroomScreen extends StatefulWidget {
   const BedroomScreen({Key? key}) : super(key: key);
@@ -256,6 +257,7 @@ class _BedroomScreenState extends State<BedroomScreen> {
                   _findItem!.removeWhere((item) => item.id == id);
                   getAllBedrooms();
                   Navigator.pop(context);
+                  FlutterRingtonePlayer.playNotification();
                 });
               },
             ),

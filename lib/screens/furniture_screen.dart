@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 import 'package:intl/intl.dart';
 import 'package:rental_z/helpers/drawer_navigation.dart';
 import 'package:rental_z/models/furniture.dart';
@@ -237,9 +238,10 @@ class _FurnitureScreenState extends State<FurnitureScreen> {
                   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                     content: Text('Successfully deleted a furniture!'),
                   ));
+                  _FurnitureList.removeWhere((furniture) => furniture.id == id);
                   getAllFurnitures();
                   Navigator.pop(context);
-                  _FurnitureList.removeWhere((furniture) => furniture.id == id);
+                  FlutterRingtonePlayer.playNotification();
                 });
               },
             ),
