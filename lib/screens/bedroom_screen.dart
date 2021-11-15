@@ -205,7 +205,9 @@ class _BedroomScreenState extends State<BedroomScreen> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+                const SizedBox(height: 10),
                 Text('Description: ${bedroom.description}'),
+                const SizedBox(height: 10),
                 Text(
                   'Created At: ${DateFormat('yyyy-MM-dd').format(DateTime.parse(bedroom.createdAt!))}',
                 ),

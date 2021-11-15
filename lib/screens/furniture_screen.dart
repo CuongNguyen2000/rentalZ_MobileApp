@@ -189,7 +189,9 @@ class _FurnitureScreenState extends State<FurnitureScreen> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+                const SizedBox(height: 10),
                 Text('Furniture Description: ${furniture.description}'),
+                const SizedBox(height: 10),
                 Text(
                   'Created At: ${DateFormat('dd-MM-yyyy').format(DateTime.parse(furniture.createdAt!))}',
                 ),

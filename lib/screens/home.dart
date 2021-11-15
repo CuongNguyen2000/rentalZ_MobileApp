@@ -419,63 +419,158 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             )
-          // Show list of house into grid view
+          // Show list of house into grid view set the number of column  and number of row in grid view
           : GridView.count(
-              crossAxisCount: 2,
+              crossAxisCount: 1,
               children: _findItem!.map((house) {
                 return Card(
                   color: Colors.orange[200],
-                  // border radius is 10
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(30),
                   ),
-                  // tap to view details of house
-                  child: InkWell(
-                    onTap: () {
-                      _showDetails(house.id);
-                    },
+                  // margin
+                  margin: const EdgeInsets.all(15),
+                  // resize card to fit the screen  and set the padding of card to 10 and set the margin of card to 10  and set the height of card to 200 and set the width of card to 200  and set the child of card to a list of widgets
+                  child: Padding(
+                    padding: const EdgeInsets.all(20),
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      // tap to view the house detail
                       children: <Widget>[
-                        ListTile(
-                          title: Text('Name: ${house.name!}'),
-                          subtitle: Text(
-                            '\$ ${house.price!.toString()} / month',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
+                        GestureDetector(
+                          onTap: () {
+                            _showDetails(house.id);
+                          },
+                          // container to show the image of house set radius of container to 20 and show the image of house
+                          child: Container(
+                            height: 200,
+                            width: 340,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              image: const DecorationImage(
+                                image: NetworkImage(
+                                  'https://picsum.photos/250?image=9',
+                                ),
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ),
                         ),
                         ListTile(
-                          title: Text('Address: ${house.address!}'),
-                          subtitle: Text(
-                            'Reporter: ${house.reporter!}',
+                          title: Text(
+                            'Name: ${house.name!}',
+                            // color text to attach to the card
+                            style: TextStyle(
+                              color: Colors.red,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                'Price: ${house.price} / month',
+                                style: Theme.of(context).textTheme.subtitle1,
+                              ),
+                              Text(
+                                'Location: ${house.address}',
+                                style: Theme.of(context).textTheme.subtitle1,
+                              ),
+                            ],
+                          ),
+                          trailing: Text(
+                            '${DateFormat('dd-MM-yyyy').format(DateTime.parse(house.updatedAt!))}',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize: 20,
                             ),
                           ),
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: <Widget>[
-                            ElevatedButton(
-                              child: const Text('Update'),
-                              onPressed: () {
-                                _showUpdateForm(house.id);
-                              },
+                            CircleAvatar(
+                              backgroundColor: Colors.white,
+                              child: IconButton(
+                                icon: Icon(Icons.edit),
+                                onPressed: () {
+                                  _showUpdateForm(house.id);
+                                },
+                              ),
                             ),
-                            ElevatedButton(
-                              child: const Text('Delete'),
-                              onPressed: () {
-                                _showDeleteMessage(house.id);
-                              },
+                            CircleAvatar(
+                              backgroundColor: Colors.white,
+                              child: IconButton(
+                                icon: Icon(Icons.delete),
+                                onPressed: () {
+                                  _showDeleteMessage(house.id);
+                                },
+                              ),
                             ),
                           ],
                         ),
                       ],
                     ),
                   ),
+
+                  // child: InkWell(
+                  //   onTap: () {
+                  //     _showDetails(house.id);
+                  //   },
+                  //   child: Column(
+                  //     children: <Widget>[
+                  //       ListTile(
+                  //         title: Text(
+                  //           'Name: ${house.name!}',
+                  //           // color text to attach to the card
+                  //           style: TextStyle(
+                  //             color: Colors.red,
+                  //             fontWeight: FontWeight.bold,
+                  //           ),
+                  //         ),
+                  //         subtitle: Text(
+                  //           '\$ ${house.price!.toString()} / month',
+                  //           style: TextStyle(
+                  //             fontWeight: FontWeight.bold,
+                  //             fontSize: 20,
+                  //           ),
+                  //         ),
+                  //       ),
+                  //       ListTile(
+                  //         title: Text('Address: ${house.address!}'),
+                  //         subtitle: Text(
+                  //           'Reporter: ${house.reporter!}',
+                  //           style: TextStyle(
+                  //             fontWeight: FontWeight.bold,
+                  //             fontSize: 20,
+                  //           ),
+                  //         ),
+                  //       ),
+                  //       Row(
+                  //         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  //         children: <Widget>[
+                  //           CircleAvatar(
+                  //             backgroundColor: Colors.white,
+                  //             child: IconButton(
+                  //               icon: Icon(Icons.edit),
+                  //               onPressed: () {
+                  //                 _showUpdateForm(house.id);
+                  //               },
+                  //             ),
+                  //           ),
+                  //           CircleAvatar(
+                  //             backgroundColor: Colors.white,
+                  //             child: IconButton(
+                  //               icon: Icon(Icons.delete),
+                  //               onPressed: () {
+                  //                 _showDeleteMessage(house.id);
+                  //               },
+                  //             ),
+                  //           ),
+                  //         ],
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
                 );
               }).toList(),
             ),

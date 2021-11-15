@@ -186,7 +186,9 @@ class _RoomScreennState extends State<RoomScreen> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+                const SizedBox(height: 10),
                 Text('Description: ${room.description}'),
+                const SizedBox(height: 10),
                 Text(
                   'Created At: ${DateFormat('dd-MM-yyyy').format(DateTime.parse(room.createdAt!))}',
                 ),
