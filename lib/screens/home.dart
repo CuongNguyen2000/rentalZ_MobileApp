@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
@@ -90,6 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
         model.note = house['note'];
         model.reporter = house['reporter'];
         model.note = house['note'];
+        model.image = house['image'];
         model.price = house['price'];
         model.address = house['address'];
         model.bedroom_type = house['bedroom_type'];
@@ -495,10 +498,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             width: 340,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(20),
-                              image: const DecorationImage(
-                                image: NetworkImage(
-                                  'https://picsum.photos/250?image=9',
-                                ),
+                              image: DecorationImage(
+                                image: MemoryImage(base64Decode(house.image!)),
                                 fit: BoxFit.cover,
                               ),
                             ),

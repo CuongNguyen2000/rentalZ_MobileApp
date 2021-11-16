@@ -3,6 +3,7 @@ class House {
   String? name;
   String? address;
   String? note;
+  String? image;
   int? price;
   String? reporter;
   String? room_type;
@@ -18,6 +19,7 @@ class House {
     mapping['name'] = name;
     mapping['address'] = address;
     mapping['note'] = note;
+    mapping['image'] = image;
     mapping['price'] = price;
     mapping['reporter'] = reporter;
     mapping['room_type'] = room_type;

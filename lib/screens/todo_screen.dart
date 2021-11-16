@@ -1,5 +1,11 @@
+import 'dart:io';
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:rental_z/Utils/utility.dart';
 import 'package:rental_z/services/bedroom_service.dart';
 import 'package:rental_z/services/house_service.dart';
 import 'package:rental_z/services/room_service.dart';
@@ -15,11 +21,15 @@ class TodoScreen extends StatefulWidget {
 }
 
 class _TodoScreenState extends State<TodoScreen> {
+  File? image;
+
   final _houseNameController = TextEditingController();
   final _houseNoteController = TextEditingController();
   final _housePriceController = TextEditingController();
   final _houseAddressController = TextEditingController();
   final _houseReporterController = TextEditingController();
+
+  dynamic _pickImageError;
 
   final _houseService = HouseService();
   final _house = House();
@@ -136,6 +146,7 @@ class _TodoScreenState extends State<TodoScreen> {
                 _house.bedroom_type = _selectedBedroom;
                 _house.furniture_type = _selectedFurniture;
                 _house.room_type = _selectedRoom;
+                _house.image = await Utility.convertImageToBase64(image);
                 _house.createdAt = DateTime.now().toString();
                 _house.updatedAt = DateTime.now().toString();
                 await _houseService.insertHouse(_house);
@@ -158,6 +169,71 @@ class _TodoScreenState extends State<TodoScreen> {
       return false;
     }
     return int.tryParse(value) != null;
+  }
+
+  // _onImageButtonPressed to open gallery and get the image convert to base64
+  Future _onImageButtonPressed(ImageSource source) async {
+    try {
+      final image = await ImagePicker().pickImage(source: source);
+      if (image == null) return;
+
+      final imageTemporary = File(image.path);
+      setState(() {
+        this.image = imageTemporary;
+      });
+    } on PlatformException catch (e) {
+      setState(() {
+        _pickImageError = e;
+      });
+    }
+  }
+
+  Future<void> _displayPickImageDialog(
+      BuildContext buildContext,
+      Future<Null> Function(double? maxWidth, double? maxHeight, int? quality)
+          param1) {
+    return showDialog<void>(
+      context: buildContext,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Pick an image'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                TextButton(
+                  child: const Text('Take a photo'),
+                  onPressed: () async {
+                    await param1(null, null, null);
+                    Navigator.pop(context);
+                  },
+                ),
+                TextButton(
+                  child: const Text('Pick from gallery'),
+                  onPressed: () async {
+                    await param1(null, null, null);
+                    Navigator.pop(context);
+                  },
+                ),
+                TextButton(
+                  child: const Text('Pick from camera'),
+                  onPressed: () async {
+                    await param1(null, null, null);
+                    Navigator.pop(context);
+                  },
+                ),
+                TextButton(
+                  child: const Text('Pick from camera with custom options'),
+                  onPressed: () async {
+                    await param1(640, 480, 100);
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -286,6 +362,65 @@ class _TodoScreenState extends State<TodoScreen> {
                   decoration: const InputDecoration(
                     labelText: 'Select Furniture',
                     hintText: 'Select the furniture of house',
+                  ),
+                ),
+                // select images from gallery to upload
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextButton(
+                          onPressed: () {
+                            _onImageButtonPressed(
+                              ImageSource.gallery,
+                            );
+                          },
+                          child: const Text('Select Image'),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextButton(
+                          onPressed: () {
+                            _onImageButtonPressed(
+                              ImageSource.camera,
+                            );
+                          },
+                          child: const Text('Take Image'),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                // return a card to show image selected preview
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: <Widget>[
+                        // return a image to show preview image
+                        image != null
+                            ? Image.file(
+                                image!,
+                                fit: BoxFit.cover,
+                              )
+                            : Container(),
+                        // return a button to delete image
+                        image != null
+                            ? TextButton(
+                                onPressed: () {
+                                  setState(() {
+                                    image = null;
+                                  });
+                                },
+                                child: const Text('Delete'),
+                              )
+                            : Container(),
+                      ],
+                    ),
                   ),
                 ),
                 // return a card with color with text form field to enter the note of the house
