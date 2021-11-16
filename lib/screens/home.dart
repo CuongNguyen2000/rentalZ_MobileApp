@@ -240,13 +240,19 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  bool isNumeric(String value) {
+    if (value == null) {
+      return false;
+    }
+    return int.tryParse(value) != null;
+  }
+
   // this form is use to update the house information by id
   void _showUpdateForm(int? id) {
     if (id == null) {
       return;
     }
     var house = _findItem!.firstWhere((house) => house.id == id);
-    // assign values controller to the form fields  and set the value of the fields
     _houseReporterController.text = house.reporter!;
     _houseNameController.text = house.name!;
     _houseNoteController.text = house.note!;
@@ -261,91 +267,133 @@ class _HomeScreenState extends State<HomeScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Update House'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                TextFormField(
-                  controller: _houseReporterController,
-                  decoration: InputDecoration(
-                    labelText: 'Reporter',
-                    hintText: 'Enter name of reporter',
+          content: Form(
+            key: _formKey,
+            child: SingleChildScrollView(
+              child: ListBody(
+                children: <Widget>[
+                  TextFormField(
+                    controller: _houseReporterController,
+                    decoration: InputDecoration(
+                      labelText: 'Reporter *',
+                      hintText: 'Enter name of reporter',
+                    ),
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Reporter cannot be empty';
+                      }
+                      return null;
+                    },
                   ),
-                ),
-                TextFormField(
-                  controller: _houseNameController,
-                  decoration: InputDecoration(
-                    labelText: 'Name',
-                    hintText: 'Enter name of house',
+                  TextFormField(
+                    controller: _houseNameController,
+                    decoration: InputDecoration(
+                      labelText: 'Name *',
+                      hintText: 'Enter name of house',
+                    ),
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Name cannot be empty';
+                      }
+                      return null;
+                    },
                   ),
-                ),
-                TextFormField(
-                  controller: _housePriceController,
-                  decoration: InputDecoration(
-                    labelText: 'Price',
-                    hintText: 'Enter price of house',
+                  TextFormField(
+                    controller: _housePriceController,
+                    decoration: InputDecoration(
+                      labelText: 'Price *',
+                      hintText: 'Enter price of house',
+                    ),
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Price cannot be empty';
+                      }
+                      if (!isNumeric(value)) {
+                        return 'Price must be a number';
+                      }
+                      return null;
+                    },
                   ),
-                ),
-                TextFormField(
-                  controller: _houseAddressController,
-                  decoration: InputDecoration(
-                    labelText: 'Address',
-                    hintText: 'Enter address of house',
+                  TextFormField(
+                    controller: _houseAddressController,
+                    decoration: InputDecoration(
+                      labelText: 'Address *',
+                      hintText: 'Enter address of house',
+                    ),
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Address cannot be empty';
+                      }
+                      return null;
+                    },
                   ),
-                ),
-                DropdownButtonFormField<dynamic>(
-                  value: _selectedBedroom,
-                  items: _bedrooms,
-                  decoration: InputDecoration(
-                    labelText: 'Select Bedroom',
-                    hintText: 'Select bedroom type',
+                  DropdownButtonFormField<dynamic>(
+                    value: _selectedBedroom,
+                    items: _bedrooms,
+                    decoration: InputDecoration(
+                      labelText: 'Select Bedroom *',
+                      hintText: 'Select bedroom type',
+                    ),
+                    onChanged: (newValue) {
+                      setState(() {
+                        _selectedBedroom = newValue;
+                      });
+                    },
+                    validator: (value) {
+                      if (value == null) {
+                        return 'Bedroom cannot be empty';
+                      }
+                      return null;
+                    },
                   ),
-                  onChanged: (newValue) {
-                    setState(() {
-                      _selectedBedroom = newValue;
-                    });
-                  },
-                ),
-                DropdownButtonFormField<dynamic>(
-                  value: _selectedFurniture,
-                  items: _furnitures,
-                  decoration: InputDecoration(
-                    labelText: 'Select Furniture',
-                    hintText: 'Select furniture type',
+                  DropdownButtonFormField<dynamic>(
+                    value: _selectedFurniture,
+                    items: _furnitures,
+                    decoration: InputDecoration(
+                      labelText: 'Select Furniture',
+                      hintText: 'Select furniture type',
+                    ),
+                    onChanged: (newValue) {
+                      setState(() {
+                        _selectedFurniture = newValue;
+                      });
+                    },
                   ),
-                  onChanged: (newValue) {
-                    setState(() {
-                      _selectedFurniture = newValue;
-                    });
-                  },
-                ),
-                DropdownButtonFormField<dynamic>(
-                  value: _selectedRoom,
-                  items: _rooms,
-                  decoration: InputDecoration(
-                    labelText: 'Select Room',
-                    hintText: 'Select room type',
+                  DropdownButtonFormField<dynamic>(
+                    value: _selectedRoom,
+                    items: _rooms,
+                    decoration: InputDecoration(
+                      labelText: 'Select Room *',
+                      hintText: 'Select room type',
+                    ),
+                    onChanged: (newValue) {
+                      setState(() {
+                        _selectedRoom = newValue;
+                      });
+                    },
+                    validator: (value) {
+                      if (value == null) {
+                        return 'Room cannot be empty';
+                      }
+                      return null;
+                    },
                   ),
-                  onChanged: (newValue) {
-                    setState(() {
-                      _selectedRoom = newValue;
-                    });
-                  },
-                ),
-                Card(
-                  color: Colors.orange[200],
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: TextFormField(
-                      controller: _houseNoteController,
-                      decoration: const InputDecoration(
-                        labelText: 'Note',
-                        hintText: 'Enter note of house',
+                  Card(
+                    color: Colors.orange[200],
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: TextFormField(
+                        controller: _houseNoteController,
+                        decoration: const InputDecoration(
+                          labelText: 'Note',
+                          hintText: 'Enter note of house',
+                        ),
+                        maxLines: 3,
                       ),
-                      maxLines: 3,
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
           actions: <Widget>[
@@ -359,12 +407,15 @@ class _HomeScreenState extends State<HomeScreen> {
               child: const Text('Update'),
               onPressed: () {
                 setState(() {
-                  _updateHouse(id);
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    content: Text('Successfully updated a house!'),
-                  ));
+                  if (_formKey.currentState!.validate()) {
+                    _updateHouse(id);
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text('Successfully updated a house!'),
+                    ));
+                  }
                   getAllHouses();
                   Navigator.pop(context);
+                  FlutterRingtonePlayer.playNotification();
                 });
               },
             ),
@@ -419,7 +470,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             )
-          // Show list of house into grid view set the number of column  and number of row in grid view
           : GridView.count(
               crossAxisCount: 1,
               children: _findItem!.map((house) {
@@ -430,7 +480,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   // margin
                   margin: const EdgeInsets.all(15),
-                  // resize card to fit the screen  and set the padding of card to 10 and set the margin of card to 10  and set the height of card to 200 and set the width of card to 200  and set the child of card to a list of widgets
                   child: Padding(
                     padding: const EdgeInsets.all(20),
                     child: Column(
@@ -441,7 +490,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           onTap: () {
                             _showDetails(house.id);
                           },
-                          // container to show the image of house set radius of container to 20 and show the image of house
                           child: Container(
                             height: 200,
                             width: 340,
