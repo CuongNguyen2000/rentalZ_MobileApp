@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 import 'package:intl/intl.dart';
 import 'package:rental_z/helpers/drawer_navigation.dart';
@@ -11,6 +13,8 @@ import 'package:rental_z/services/furniture_service.dart';
 import 'package:rental_z/services/house_service.dart';
 import 'package:rental_z/models/house.dart';
 import 'package:rental_z/services/room_service.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:rental_z/Utils/utility.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -27,15 +31,19 @@ class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _houseReporterController =
       TextEditingController();
 
+  // File? image;
+
+  dynamic _pickImageError;
+
   var _selectedRoom;
   var _selectedBedroom;
   var _selectedFurniture;
+  File? _selectedImage;
 
   final _rooms = <DropdownMenuItem>[];
   final _bedrooms = <DropdownMenuItem>[];
   final _furnitures = <DropdownMenuItem>[];
 
-  // global formKey
   final _formKey = GlobalKey<FormState>();
 
   _loadRooms() async {
@@ -117,6 +125,22 @@ class _HomeScreenState extends State<HomeScreen> {
     _findItem = _houseList;
   }
 
+  Future _onImageButtonPressed(ImageSource source) async {
+    try {
+      final _selectedImage = await ImagePicker().pickImage(source: source);
+      if (_selectedImage == null) return;
+
+      final imageTemporary = File(_selectedImage.path);
+      setState(() {
+        this._selectedImage = imageTemporary;
+      });
+    } on PlatformException catch (e) {
+      setState(() {
+        _pickImageError = e;
+      });
+    }
+  }
+
   void _searchHouse(String text) {
     List<House> results = [];
     if (text.isEmpty) {
@@ -146,6 +170,13 @@ class _HomeScreenState extends State<HomeScreen> {
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
+                house.image != null
+                    ? Image.memory(
+                        base64.decode(house.image!),
+                        height: 200,
+                        width: 200,
+                      )
+                    : Container(),
                 Text(
                   'Reporter: ${house.reporter}',
                   // text color and font bold
@@ -235,6 +266,7 @@ class _HomeScreenState extends State<HomeScreen> {
       _houseNameController.text,
       _houseAddressController.text,
       _houseReporterController.text,
+      // Utility.convertImageToBase64(_selectedImage),
       int.parse(_housePriceController.text),
       _houseNoteController.text,
       _selectedRoom,
@@ -264,6 +296,9 @@ class _HomeScreenState extends State<HomeScreen> {
     _selectedBedroom = house.bedroom_type;
     _selectedFurniture = house.furniture_type;
     _selectedRoom = house.room_type;
+    // _selectedImage = null;
+
+    // _selectedImage = Image.memory(base64.decode(house.image!));
 
     showDialog<String>(
       context: context,
@@ -381,6 +416,65 @@ class _HomeScreenState extends State<HomeScreen> {
                       return null;
                     },
                   ),
+                  // Row(
+                  //   children: <Widget>[
+                  //     Expanded(
+                  //       child: Padding(
+                  //         padding: const EdgeInsets.all(8.0),
+                  //         child: TextButton(
+                  //           onPressed: () {
+                  //             _onImageButtonPressed(
+                  //               ImageSource.gallery,
+                  //             );
+                  //           },
+                  //           child: const Text('Select Image'),
+                  //         ),
+                  //       ),
+                  //     ),
+                  //     Expanded(
+                  //       child: Padding(
+                  //         padding: const EdgeInsets.all(8.0),
+                  //         child: TextButton(
+                  //           onPressed: () {
+                  //             _onImageButtonPressed(
+                  //               ImageSource.camera,
+                  //             );
+                  //           },
+                  //           child: const Text('Take Image'),
+                  //         ),
+                  //       ),
+                  //     ),
+                  //   ],
+                  // ),
+                  // return a form to update image  and set image to image view
+                  // Card(
+                  //   child: Padding(
+                  //     padding: const EdgeInsets.all(8.0),
+                  //     child: Column(
+                  //       children: <Widget>[
+                  //         // return a selected image if image is selected
+                  //         _selectedImage != null
+                  //             ? Image.file(
+                  //                 _selectedImage!,
+                  //                 height: 200,
+                  //                 width: 200,
+                  //               )
+                  //             : Text('No Image Selected'),
+                  //         // return a button to delete image
+                  //         _selectedImage != null
+                  //             ? TextButton(
+                  //                 onPressed: () {
+                  //                   setState(() {
+                  //                     _selectedImage = null;
+                  //                   });
+                  //                 },
+                  //                 child: const Text('Delete'),
+                  //               )
+                  //             : Container(),
+                  //       ],
+                  //     ),
+                  //   ),
+                  // ),
                   Card(
                     color: Colors.orange[200],
                     child: Padding(
@@ -389,7 +483,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         controller: _houseNoteController,
                         decoration: const InputDecoration(
                           labelText: 'Note',
-                          hintText: 'Enter note of house',
+                          hintText: 'Enter some note',
                         ),
                         maxLines: 3,
                       ),
@@ -416,8 +510,16 @@ class _HomeScreenState extends State<HomeScreen> {
                       content: Text('Successfully updated a house!'),
                     ));
                   }
-                  getAllHouses();
+                  // load screen after update
                   Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const HomeScreen(),
+                    ),
+                  );
+                  // getAllHouses();
+                  // Navigator.pop(context);
                   FlutterRingtonePlayer.playNotification();
                 });
               },

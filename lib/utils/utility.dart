@@ -12,4 +12,11 @@ class Utility {
     }
     return base64Encode(houseImage.readAsBytesSync());
   }
+
+  static decodeImageFromBase64(String s) {
+    if (s == null) {
+      return null;
+    }
+    return base64Decode(s);
+  }
 }

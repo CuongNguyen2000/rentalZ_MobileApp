@@ -102,7 +102,14 @@ class _TodoScreenState extends State<TodoScreen> {
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                //text with color
+                // show image here
+                image == null
+                    ? Text('No image selected.')
+                    : Image.file(
+                        image!,
+                        height: 200,
+                        width: 200,
+                      ),
                 Text(
                   'House Reporter: ${_houseReporterController.text}',
                   style: const TextStyle(color: Colors.red),
@@ -171,7 +178,6 @@ class _TodoScreenState extends State<TodoScreen> {
     return int.tryParse(value) != null;
   }
 
-  // _onImageButtonPressed to open gallery and get the image convert to base64
   Future _onImageButtonPressed(ImageSource source) async {
     try {
       final image = await ImagePicker().pickImage(source: source);
@@ -188,53 +194,53 @@ class _TodoScreenState extends State<TodoScreen> {
     }
   }
 
-  Future<void> _displayPickImageDialog(
-      BuildContext buildContext,
-      Future<Null> Function(double? maxWidth, double? maxHeight, int? quality)
-          param1) {
-    return showDialog<void>(
-      context: buildContext,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Pick an image'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                TextButton(
-                  child: const Text('Take a photo'),
-                  onPressed: () async {
-                    await param1(null, null, null);
-                    Navigator.pop(context);
-                  },
-                ),
-                TextButton(
-                  child: const Text('Pick from gallery'),
-                  onPressed: () async {
-                    await param1(null, null, null);
-                    Navigator.pop(context);
-                  },
-                ),
-                TextButton(
-                  child: const Text('Pick from camera'),
-                  onPressed: () async {
-                    await param1(null, null, null);
-                    Navigator.pop(context);
-                  },
-                ),
-                TextButton(
-                  child: const Text('Pick from camera with custom options'),
-                  onPressed: () async {
-                    await param1(640, 480, 100);
-                    Navigator.pop(context);
-                  },
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
+  // Future<void> _displayPickImageDialog(
+  //     BuildContext buildContext,
+  //     Future<Null> Function(double? maxWidth, double? maxHeight, int? quality)
+  //         param1) {
+  //   return showDialog<void>(
+  //     context: buildContext,
+  //     builder: (context) {
+  //       return AlertDialog(
+  //         title: const Text('Pick an image'),
+  //         content: SingleChildScrollView(
+  //           child: ListBody(
+  //             children: <Widget>[
+  //               TextButton(
+  //                 child: const Text('Take a photo'),
+  //                 onPressed: () async {
+  //                   await param1(null, null, null);
+  //                   Navigator.pop(context);
+  //                 },
+  //               ),
+  //               TextButton(
+  //                 child: const Text('Pick from gallery'),
+  //                 onPressed: () async {
+  //                   await param1(null, null, null);
+  //                   Navigator.pop(context);
+  //                 },
+  //               ),
+  //               TextButton(
+  //                 child: const Text('Pick from camera'),
+  //                 onPressed: () async {
+  //                   await param1(null, null, null);
+  //                   Navigator.pop(context);
+  //                 },
+  //               ),
+  //               TextButton(
+  //                 child: const Text('Pick from camera with custom options'),
+  //                 onPressed: () async {
+  //                   await param1(640, 480, 100);
+  //                   Navigator.pop(context);
+  //                 },
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -439,26 +445,22 @@ class _TodoScreenState extends State<TodoScreen> {
                   ),
                 ),
 
-                // return a orange button to add the house and check validation of the input fields and check if price is not a number and navigate to the home page
                 ElevatedButton(
                   child: Text('Add House'),
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Processing Data')),
-                      );
-                      if (!isNumeric(_housePriceController.text)) {
+                      if (image == null) {
                         showDialog(
                           context: context,
                           builder: (BuildContext context) {
                             return AlertDialog(
-                              title: Text('Error'),
-                              content: Text('Price must be a number'),
+                              title: Text('Image is not null'),
+                              content: Text('Please select an image'),
                               actions: <Widget>[
                                 TextButton(
-                                  child: Text('Ok'),
+                                  child: Text('OK'),
                                   onPressed: () {
-                                    Navigator.pop(context);
+                                    Navigator.of(context).pop();
                                   },
                                 ),
                               ],
@@ -466,6 +468,9 @@ class _TodoScreenState extends State<TodoScreen> {
                           },
                         );
                       } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Processing Data')),
+                        );
                         _showConfirmDialog(context);
                       }
                     }
