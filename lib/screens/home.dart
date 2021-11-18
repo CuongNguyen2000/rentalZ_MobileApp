@@ -296,9 +296,6 @@ class _HomeScreenState extends State<HomeScreen> {
     _selectedBedroom = house.bedroom_type;
     _selectedFurniture = house.furniture_type;
     _selectedRoom = house.room_type;
-    // _selectedImage = null;
-
-    // _selectedImage = Image.memory(base64.decode(house.image!));
 
     showDialog<String>(
       context: context,
@@ -546,14 +543,14 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             // Search bar
-            Container(
+            SizedBox(
               width: MediaQuery.of(context).size.width * 0.5,
               child: TextField(
                 onChanged: (text) {
                   _searchHouse(text);
                 },
                 decoration: const InputDecoration(
-                  hintText: 'Search Bedroom',
+                  hintText: 'Search House',
                   border: InputBorder.none,
                   prefixIcon: Icon(Icons.search),
                 ),
@@ -562,7 +559,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
-      // show card message if no house found
       body: _findItem!.isEmpty
           ? Center(
               child: Column(
@@ -662,66 +658,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
                   ),
-
-                  // child: InkWell(
-                  //   onTap: () {
-                  //     _showDetails(house.id);
-                  //   },
-                  //   child: Column(
-                  //     children: <Widget>[
-                  //       ListTile(
-                  //         title: Text(
-                  //           'Name: ${house.name!}',
-                  //           // color text to attach to the card
-                  //           style: TextStyle(
-                  //             color: Colors.red,
-                  //             fontWeight: FontWeight.bold,
-                  //           ),
-                  //         ),
-                  //         subtitle: Text(
-                  //           '\$ ${house.price!.toString()} / month',
-                  //           style: TextStyle(
-                  //             fontWeight: FontWeight.bold,
-                  //             fontSize: 20,
-                  //           ),
-                  //         ),
-                  //       ),
-                  //       ListTile(
-                  //         title: Text('Address: ${house.address!}'),
-                  //         subtitle: Text(
-                  //           'Reporter: ${house.reporter!}',
-                  //           style: TextStyle(
-                  //             fontWeight: FontWeight.bold,
-                  //             fontSize: 20,
-                  //           ),
-                  //         ),
-                  //       ),
-                  //       Row(
-                  //         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  //         children: <Widget>[
-                  //           CircleAvatar(
-                  //             backgroundColor: Colors.white,
-                  //             child: IconButton(
-                  //               icon: Icon(Icons.edit),
-                  //               onPressed: () {
-                  //                 _showUpdateForm(house.id);
-                  //               },
-                  //             ),
-                  //           ),
-                  //           CircleAvatar(
-                  //             backgroundColor: Colors.white,
-                  //             child: IconButton(
-                  //               icon: Icon(Icons.delete),
-                  //               onPressed: () {
-                  //                 _showDeleteMessage(house.id);
-                  //               },
-                  //             ),
-                  //           ),
-                  //         ],
-                  //       ),
-                  //     ],
-                  //   ),
-                  // ),
                 );
               }).toList(),
             ),

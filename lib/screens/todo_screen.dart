@@ -98,18 +98,14 @@ class _TodoScreenState extends State<TodoScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Are you sure you want to add this house?'),
-          // singleChileScroll is a custom ScrollBehavior widget.
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                // show image here
-                image == null
-                    ? Text('No image selected.')
-                    : Image.file(
-                        image!,
-                        height: 200,
-                        width: 200,
-                      ),
+                Image.file(
+                  image!,
+                  height: 200,
+                  width: 200,
+                ),
                 Text(
                   'House Reporter: ${_houseReporterController.text}',
                   style: const TextStyle(color: Colors.red),
@@ -132,7 +128,6 @@ class _TodoScreenState extends State<TodoScreen> {
               ],
             ),
           ),
-          // content: Text('Are you sure you want to add this house?'),
 
           actions: <Widget>[
             TextButton(
@@ -476,57 +471,6 @@ class _TodoScreenState extends State<TodoScreen> {
                     }
                   },
                 ),
-                // ElevatedButton(
-                //   child: Text('Add House'),
-                //   onPressed: () async {
-                //     if (_houseNameController.text.isEmpty ||
-                //         _houseReporterController.text.isEmpty ||
-                //         _housePriceController.text.isEmpty ||
-                //         _houseAddressController.text.isEmpty ||
-                //         _selectedRoom == null ||
-                //         _selectedBedroom == null ||
-                //         _selectedFurniture == null) {
-                //       return showDialog(
-                //         context: context,
-                //         builder: (context) {
-                //           return AlertDialog(
-                //             title: const Text('Error'),
-                //             content: const Text('Please fill all the fields'),
-                //             actions: <Widget>[
-                //               TextButton(
-                //                 child: const Text('Ok'),
-                //                 onPressed: () {
-                //                   Navigator.of(context).pop();
-                //                 },
-                //               ),
-                //             ],
-                //           );
-                //         },
-                //       );
-                //     }
-                //     if (int.tryParse(_housePriceController.text) == null) {
-                //       return showDialog(
-                //         context: context,
-                //         builder: (context) {
-                //           return AlertDialog(
-                //             title: const Text('Error'),
-                //             content: const Text('Please enter a valid price'),
-                //             actions: <Widget>[
-                //               TextButton(
-                //                 child: const Text('Ok'),
-                //                 onPressed: () {
-                //                   Navigator.of(context).pop();
-                //                 },
-                //               ),
-                //             ],
-                //           );
-                //         },
-                //       );
-                //     }
-
-                //     _showConfirmDialog(context);
-                //   },
-                // ),
               ],
             ),
           ),
