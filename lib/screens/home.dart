@@ -585,7 +585,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     padding: const EdgeInsets.all(20),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      // tap to view the house detail
                       children: <Widget>[
                         GestureDetector(
                           onTap: () {
@@ -606,7 +605,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         ListTile(
                           title: Text(
                             'Name: ${house.name!}',
-                            // color text to attach to the card
                             style: TextStyle(
                               color: Colors.red,
                               fontWeight: FontWeight.bold,
