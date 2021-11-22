@@ -23,7 +23,6 @@ class _DrawerNavigationState extends State<DrawerNavigation> {
             UserAccountsDrawerHeader(
               currentAccountPicture: CircleAvatar(
                 backgroundColor: Colors.white,
-                // backgroundImage: AssetImage('assets/images/avt.jpg'),
                 child: Icon(
                   Icons.person,
                   color: Colors.black,
@@ -48,7 +47,7 @@ class _DrawerNavigationState extends State<DrawerNavigation> {
                   MaterialPageRoute(builder: (context) => BedroomScreen())),
             ),
             ListTile(
-              leading: Icon(Icons.view_list),
+              leading: Icon(Icons.chair),
               title: Text('Furniture Types'),
               onTap: () => Navigator.of(context).push(
                   MaterialPageRoute(builder: (context) => FurnitureScreen())),

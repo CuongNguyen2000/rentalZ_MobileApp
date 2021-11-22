@@ -147,8 +147,8 @@ class _HomeScreenState extends State<HomeScreen> {
       results = _houseList!;
     } else {
       results = _houseList!
-          .where(
-              (item) => item.name!.toLowerCase().contains(text.toLowerCase()))
+          .where((item) =>
+              item.room_type!.toLowerCase().contains(text.toLowerCase()))
           .toList();
     }
     setState(() {
@@ -604,7 +604,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         ListTile(
                           title: Text(
-                            'Name: ${house.name!}',
+                            'House type: ${house.room_type!}',
                             style: TextStyle(
                               color: Colors.red,
                               fontWeight: FontWeight.bold,

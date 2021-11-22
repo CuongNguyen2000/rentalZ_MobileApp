@@ -128,7 +128,6 @@ class _TodoScreenState extends State<TodoScreen> {
               ],
             ),
           ),
-
           actions: <Widget>[
             TextButton(
               child: const Text('No'),
@@ -189,54 +188,6 @@ class _TodoScreenState extends State<TodoScreen> {
     }
   }
 
-  // Future<void> _displayPickImageDialog(
-  //     BuildContext buildContext,
-  //     Future<Null> Function(double? maxWidth, double? maxHeight, int? quality)
-  //         param1) {
-  //   return showDialog<void>(
-  //     context: buildContext,
-  //     builder: (context) {
-  //       return AlertDialog(
-  //         title: const Text('Pick an image'),
-  //         content: SingleChildScrollView(
-  //           child: ListBody(
-  //             children: <Widget>[
-  //               TextButton(
-  //                 child: const Text('Take a photo'),
-  //                 onPressed: () async {
-  //                   await param1(null, null, null);
-  //                   Navigator.pop(context);
-  //                 },
-  //               ),
-  //               TextButton(
-  //                 child: const Text('Pick from gallery'),
-  //                 onPressed: () async {
-  //                   await param1(null, null, null);
-  //                   Navigator.pop(context);
-  //                 },
-  //               ),
-  //               TextButton(
-  //                 child: const Text('Pick from camera'),
-  //                 onPressed: () async {
-  //                   await param1(null, null, null);
-  //                   Navigator.pop(context);
-  //                 },
-  //               ),
-  //               TextButton(
-  //                 child: const Text('Pick from camera with custom options'),
-  //                 onPressed: () async {
-  //                   await param1(640, 480, 100);
-  //                   Navigator.pop(context);
-  //                 },
-  //               ),
-  //             ],
-  //           ),
-  //         ),
-  //       );
-  //     },
-  //   );
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -252,117 +203,166 @@ class _TodoScreenState extends State<TodoScreen> {
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: <Widget>[
-                // return a text form field to enter the name of reporter with validation of the input field
-                TextFormField(
-                  controller: _houseReporterController,
-                  decoration: const InputDecoration(
-                    labelText: 'Name Reporter *',
-                    hintText: 'Enter the name of reporter',
+                // return a text form field to enter the name of reporter with validation of the input field with border radius and icon user in the left
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: TextFormField(
+                    controller: _houseReporterController,
+                    decoration: InputDecoration(
+                      labelText: 'House Reporter',
+                      icon: Icon(Icons.person),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Please enter the reporter name';
+                      }
+                      return null;
+                    },
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter a name reporter';
-                    }
-                    return null;
-                  },
                 ),
-                // return a text form field to enter the name of the house with validation of the input field
-                TextFormField(
-                  controller: _houseNameController,
-                  decoration: const InputDecoration(
-                    labelText: 'House Name *',
-                    hintText: 'Enter the name of house',
+                // return a text form field to enter the name of house with validation of the input field with border radius and icon home in the left
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: TextFormField(
+                    controller: _houseNameController,
+                    decoration: InputDecoration(
+                      labelText: 'House Name',
+                      icon: Icon(Icons.home),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Please enter the house name';
+                      }
+                      return null;
+                    },
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter a name';
-                    }
-                    return null;
-                  },
                 ),
-                // return a text form field to enter the price of the house with validation of the input field
-                TextFormField(
-                  controller: _housePriceController,
-                  decoration: const InputDecoration(
-                    labelText: 'House Price *',
-                    hintText: 'Enter the price of house',
+                // return a text form field to enter the price of house with validation of the input field with border radius and icon attach money in the left
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: TextFormField(
+                    controller: _housePriceController,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      labelText: 'House Price',
+                      icon: Icon(Icons.attach_money),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Please enter the house price';
+                      }
+                      if (!isNumeric(value)) {
+                        return 'Please enter the house price in number';
+                      }
+                      return null;
+                    },
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter a price';
-                    }
-                    if (!isNumeric(value)) {
-                      return 'Price must be a number';
-                    }
-                    return null;
-                  },
                 ),
-                // return a text form field to enter the address of the house with validation of the input field
-                TextFormField(
-                  controller: _houseAddressController,
-                  decoration: const InputDecoration(
-                    labelText: 'House Address *',
-                    hintText: 'Enter the address of house',
+                // return a text form field to enter the address of house with validation of the input field with border radius and icon map in the left
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: TextFormField(
+                    controller: _houseAddressController,
+                    decoration: InputDecoration(
+                      labelText: 'House Address',
+                      icon: Icon(Icons.map),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Please enter the house address';
+                      }
+                      return null;
+                    },
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter an address';
-                    }
-                    return null;
-                  },
                 ),
-                // return a dropdown menu to select the room of the house
-                DropdownButtonFormField<dynamic>(
-                  value: _selectedRoom,
-                  items: _rooms,
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedRoom = value;
-                    });
-                  },
-                  decoration: const InputDecoration(
-                    labelText: 'Select Room *',
-                    hintText: 'Select the room of house',
+                // return a dropdown menu to select the room of the house with validation of the input field with border radius and icon room in the left
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: DropdownButtonFormField<dynamic>(
+                    value: _selectedRoom,
+                    items: _rooms,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedRoom = value;
+                      });
+                    },
+                    decoration: InputDecoration(
+                      labelText: 'Select Room',
+                      icon: Icon(Icons.room_service),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value == null) {
+                        return 'Please select a room';
+                      }
+                      return null;
+                    },
                   ),
-                  validator: (value) {
-                    if (value == null) {
-                      return 'Please select a room';
-                    }
-                    return null;
-                  },
                 ),
-                // return a dropdown menu to select the bedroom of the house
-                DropdownButtonFormField<dynamic>(
-                  value: _selectedBedroom,
-                  items: _bedrooms,
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedBedroom = value;
-                    });
-                  },
-                  decoration: const InputDecoration(
-                    labelText: 'Select Bedroom *',
-                    hintText: 'Select the bedroom of house',
+                // return a dropdown menu to select the bedroom of the house with validation of the input field with border radius and icon hotel in the left
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: DropdownButtonFormField<dynamic>(
+                    value: _selectedBedroom,
+                    items: _bedrooms,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedBedroom = value;
+                      });
+                    },
+                    decoration: InputDecoration(
+                      labelText: 'Select Bedroom',
+                      icon: Icon(Icons.hotel),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value == null) {
+                        return 'Please select a bedroom';
+                      }
+                      return null;
+                    },
                   ),
-                  validator: (value) {
-                    if (value == null) {
-                      return 'Please select a bedroom';
-                    }
-                    return null;
-                  },
                 ),
-                // return a dropdown menu to select the furniture of the house
-                DropdownButtonFormField<dynamic>(
-                  value: _selectedFurniture,
-                  items: _furnitures,
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedFurniture = value;
-                    });
-                  },
-                  decoration: const InputDecoration(
-                    labelText: 'Select Furniture',
-                    hintText: 'Select the furniture of house',
+                // return a dropdown menu to select the furniture of the house with validation of the input field with border radius and icon chair in the left
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: DropdownButtonFormField<dynamic>(
+                    value: _selectedFurniture,
+                    items: _furnitures,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedFurniture = value;
+                      });
+                    },
+                    decoration: InputDecoration(
+                      labelText: 'Select Furniture',
+                      icon: Icon(Icons.chair),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value == null) {
+                        return 'Please select a furniture';
+                      }
+                      return null;
+                    },
                   ),
                 ),
                 // select images from gallery to upload
@@ -396,20 +396,23 @@ class _TodoScreenState extends State<TodoScreen> {
                     ),
                   ],
                 ),
-                // return a card to show image selected preview
                 Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
                       children: <Widget>[
-                        // return a image to show preview image
                         image != null
-                            ? Image.file(
-                                image!,
-                                fit: BoxFit.cover,
-                              )
+                            ? Container(
+                                width: double.infinity,
+                                height: 200,
+                                child: Image.file(
+                                  image!,
+                                  fit: BoxFit.cover,
+                                ))
                             : Container(),
-                        // return a button to delete image
                         image != null
                             ? TextButton(
                                 onPressed: () {
@@ -439,9 +442,11 @@ class _TodoScreenState extends State<TodoScreen> {
                     ),
                   ),
                 ),
-
                 ElevatedButton(
                   child: Text('Add House'),
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.orange),
+                  ),
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       if (image == null) {
